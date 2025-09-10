@@ -20,9 +20,9 @@ graph TD
     B --> C[Controladores]
     C --> D[Servicios]
     D --> E[Repositorios]
-    D --> F[IA (Gemini)]
+    D --> F[IA Gemini]
     D --> G[Almacenamiento R2]
-    E --> H[(Base de Datos)]
+    E --> H[Base de Datos]
     
     subgraph Aplicación
         C

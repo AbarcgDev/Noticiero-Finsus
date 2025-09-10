@@ -1,0 +1,51 @@
+{
+  "name": "projects",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --respawn --transpile-only server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "start:dev": "ts-node --transpile-only -r tsconfig-paths/register server.ts",
+    "docker:build": "docker build -t noticiero-finsus .",
+    "docker:run": "docker run -p 3000:3000 noticiero-finsus",
+    "docker:compose": "docker-compose up -d",
+    "docker:compose:build": "docker-compose up --build -d"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.883.0",
+    "@aws-sdk/s3-request-presigner": "^3.883.0",
+    "@google/genai": "^1.18.0",
+    "@google/generative-ai": "^0.21.0",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "fast-xml-parser": "^5.2.5",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "http-status-code": "^2.1.0",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.14.4",
+    "sequelize": "^6.37.7",
+    "wav": "^1.0.2",
+    "wav-encoder": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^24.3.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.5.4"
+  }
+}

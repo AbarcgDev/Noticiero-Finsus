@@ -1,0 +1,54 @@
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: noticiero-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: abargdev
+      MYSQL_DATABASE: testingDB
+      MYSQL_USER: abargdev
+      MYSQL_PASSWORD: abargdev
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - noticiero-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  # RSS News Aggregator App
+  app:
+    build: .
+    container_name: noticiero-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: testingDB
+      DB_USER: abargdev
+      DB_PASSWORD: abargdev
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - noticiero-network
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mysql_data:
+
+
+networks:
+  noticiero-network:
+    driver: bridge

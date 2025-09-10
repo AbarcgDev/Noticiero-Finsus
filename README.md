@@ -36,6 +36,7 @@ graph TD
     end
 ```
 
+
 ### Flujo de Datos
 1. **Cliente**: Realiza peticiones HTTP a la API
 2. **Controladores**: Gestionan las rutas y validan las solicitudes

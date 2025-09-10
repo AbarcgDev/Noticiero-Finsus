@@ -1,0 +1,47 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/app/*"
+            ],
+            "@utils/*": [
+                "src/app/utils/*"
+            ],
+            "@models/*": [
+                "src/app/models/*"
+            ],
+            "@controllers/*": [
+                "src/app/controllers/*"
+            ],
+            "@config/*": [
+                "src/app/config/*"
+            ],
+            "@services/*": [
+                "src/app/services/*"
+            ],
+            "@middlewares/*": [
+                "src/app/middlewares/*"
+            ],
+            "@routes/*": [
+                "src/app/routes/*"
+            ]
+        },
+        "allowJs": true,
+        "checkJs": false,
+        "skipLibCheck": true,
+        "resolveJsonModule": true
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

@@ -1,4 +1,4 @@
-# 📰 Noticiero FinSus - Servicio de creacion de Noticieros mediante IA
+# 📰 Noticiero Finsus - Servicio de creacion de Noticieros mediante IA
 
 Aplicación Node.js/TypeScript para la gestión y publicación de noticieros con soporte para fuentes RSS y generación de audio mediante IA.
 

@@ -1,4 +1,4 @@
-# 📰 Noticiero FinSus - Plataforma de Gestión de Noticias
+# 📰 Noticiero FinSus - Servicio de creacion de Noticieros mediante IA
 
 Aplicación Node.js/TypeScript para la gestión y publicación de noticieros con soporte para fuentes RSS y generación de audio mediante IA.
 
@@ -11,6 +11,168 @@ Aplicación Node.js/TypeScript para la gestión y publicación de noticieros con
 - 🏗️ Arquitectura limpia con separación de responsabilidades
 - 🛠️ TypeScript para tipado estático
 - 🔄 API RESTful completa
+
+## 🏗️ Arquitectura del Sistema
+
+```mermaid
+graph TD
+    A[Cliente] -->|Solicitudes HTTP| B[API REST]
+    B --> C[Controladores]
+    C --> D[Servicios]
+    D --> E[Repositorios]
+    D --> F[IA (Gemini)]
+    D --> G[Almacenamiento R2]
+    E --> H[(Base de Datos)]
+    
+    subgraph Aplicación
+        C
+        D
+        E
+    end
+    
+    subgraph Servicios Externos
+        F
+        G
+    end
+```
+
+### Flujo de Datos
+1. **Cliente**: Realiza peticiones HTTP a la API
+2. **Controladores**: Gestionan las rutas y validan las solicitudes
+3. **Servicios**: Contienen la lógica de negocio
+4. **Repositorios**: Manejan el acceso a la base de datos
+5. **Servicios Externos**: Integración con IA y almacenamiento en la nube
+
+## 🗃️ Esquema de la Base de Datos
+
+```mermaid
+erDiagram
+    NOTICIERO {
+        string id PK
+        string title
+        text guion
+        enum state
+        datetime publicationDate
+    }
+    
+    RSS_CHANNEL {
+        string id PK
+        string name
+        string url
+        boolean isActive
+    }
+```
+
+### Descripción de las Tablas
+
+#### NOTICIERO
+- Almacena los noticieros generados
+- Estados posibles: PENDING, PUBLISHED, REJECTED
+- Relación uno a muchos con NOTICIA
+
+#### RSS_CHANNEL
+- Almacena las fuentes de noticias RSS
+- Puede estar activo o inactivo
+- Relación uno a muchos con NOTICIA
+
+### Gestion de IA
+
+Se puede gestionar los prompts en el archivo `AiPrompts.json` que se encuentra en la carpeta `utils`.
+Aqui se definen las instrucciones pasadas a los servicios de IA para generar el guion del noticiero. Y el Audio.
+
+## 📚 Documentación de la API
+
+### Noticieros
+
+#### Obtener todos los noticieros
+```
+GET /api/noticieros
+```
+
+#### Obtener un noticiero por ID
+```
+GET /api/noticieros/:id
+```
+
+#### Crear borrador de noticiero
+```
+POST /api/noticieros
+```
+
+#### Actualizar noticiero
+```
+PUT /api/noticieros/:id
+```
+
+#### Eliminar noticiero
+```
+DELETE /api/noticieros/:id
+```
+
+#### Publicar noticiero
+```
+PATCH /api/noticieros/:id/publish
+```
+
+#### Rechazar noticiero
+```
+PATCH /api/noticieros/:id/reject
+```
+
+### Endpoints de Audio
+
+#### Obtener audio del último noticiero publicado
+```
+GET /api/noticieros/latest/audio
+```
+- **Respuesta**: Stream de audio MP3 del último noticiero publicado
+- **Content-Type**: audio/mpeg
+
+#### Obtener audio de un noticiero específico
+```
+GET /api/noticieros/:id/audio
+```
+- **Parámetros**:
+  - `id`: ID del noticiero
+- **Respuesta**: Stream de audio MP3 del noticiero solicitado
+- **Content-Type**: audio/mpeg
+
+### Canales RSS
+
+#### Obtener todos los canales
+```
+GET /api/rss-channels
+```
+
+#### Obtener canal por ID
+```
+GET /api/rss-channels/:id
+```
+
+#### Crear nuevo canal
+```
+POST /api/rss-channels
+```
+
+#### Actualizar canal
+```
+PUT /api/rss-channels/:id
+```
+
+#### Eliminar canal
+```
+DELETE /api/rss-channels/:id
+```
+
+#### Activar canal
+```
+PATCH /api/rss-channels/:id/activate
+```
+
+#### Desactivar canal
+```
+PATCH /api/rss-channels/:id/deactivate
+```
 
 ## 🚀 Guía Rápida de Inicio
 
@@ -65,14 +227,12 @@ Copia `.env.example` a `.env` y configura los siguientes valores:
 ### Estructura de Carpetas
 
 ```
-├── src/
-│   ├── app/              # Código fuente de la aplicación
+├── src/app/              # Código fuente de la aplicación
 │   ├── config/           # Configuraciones
 │   ├── controllers/      # Controladores de la API
 │   ├── middlewares/      # Middlewares de Express
 │   ├── models/           # Modelos de la base de datos
 │   └── services/         # Lógica de negocio
-├── init.sql/             # Scripts de inicialización de la base de datos
 └── docker-compose.yml    # Configuración de Docker Compose
 ```
 
@@ -80,7 +240,9 @@ Copia `.env.example` a `.env` y configura los siguientes valores:
 
 ### Autenticación
 
-Todas las rutas (excepto `/health` y `/login`) requieren autenticación mediante JWT.
+Se implementó la autenticación mediante JWT. Sin embargo la proteccion del sistema tambien se puede hacer mediante CORS si se consume a través de un frontend propio. Permitiendo la entrada solo desde ese dominio.
+
+Por lo tanto la protección de los endpoints específicos se puede hacer mediante JWT o CORS. Lo cual se deja a la discreción del usuario.
 
 ### Endpoints Principales
 
@@ -170,8 +332,6 @@ npm run dev
 Distribuido bajo la licencia APACHE-2.0. Ver `LICENSE` para más información.
 
 ## ✉️ Contacto
-
-Tu Nombre - [@tuusuario](https://twitter.com/tuusuario) - email@ejemplo.com
 
 Enlace del proyecto: [https://github.com/tuusuario/noticiero-finsus](https://github.com/tuusuario/noticiero-finsus)
 

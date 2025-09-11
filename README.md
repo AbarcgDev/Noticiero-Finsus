@@ -69,12 +69,10 @@ erDiagram
 #### NOTICIERO
 - Almacena los noticieros generados
 - Estados posibles: PENDING, PUBLISHED, REJECTED
-- Relación uno a muchos con NOTICIA
 
 #### RSS_CHANNEL
 - Almacena las fuentes de noticias RSS
 - Puede estar activo o inactivo
-- Relación uno a muchos con NOTICIA
 
 ### Gestion de IA
 

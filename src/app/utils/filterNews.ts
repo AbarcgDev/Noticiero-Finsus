@@ -36,6 +36,10 @@ const filterByCensor = (noticias: Noticia[]) => {
         "encarcelado",
         "encarcelada",
         "encarcelamiento",
+        "ikarus fx",
+        "icarus fx",
+        "icarus",
+        "ikarus",
     ];
 
     return noticias.filter((noticia: Noticia) => {

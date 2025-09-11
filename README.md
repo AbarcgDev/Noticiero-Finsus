@@ -1,4 +1,4 @@
-# 📰 Noticiero FinSus - Servicio de creacion de Noticieros mediante IA
+# 📰 Noticiero Finsus - Servicio de creacion de Noticieros mediante IA
 
 Aplicación Node.js/TypeScript para la gestión y publicación de noticieros con soporte para fuentes RSS y generación de audio mediante IA.
 
@@ -20,9 +20,9 @@ graph TD
     B --> C[Controladores]
     C --> D[Servicios]
     D --> E[Repositorios]
-    D --> F[IA (Gemini)]
+    D --> F[IA Gemini]
     D --> G[Almacenamiento R2]
-    E --> H[(Base de Datos)]
+    E --> H[Base de Datos]
     
     subgraph Aplicación
         C
@@ -35,6 +35,7 @@ graph TD
         G
     end
 ```
+
 
 ### Flujo de Datos
 1. **Cliente**: Realiza peticiones HTTP a la API
@@ -68,12 +69,10 @@ erDiagram
 #### NOTICIERO
 - Almacena los noticieros generados
 - Estados posibles: PENDING, PUBLISHED, REJECTED
-- Relación uno a muchos con NOTICIA
 
 #### RSS_CHANNEL
 - Almacena las fuentes de noticias RSS
 - Puede estar activo o inactivo
-- Relación uno a muchos con NOTICIA
 
 ### Gestion de IA
 

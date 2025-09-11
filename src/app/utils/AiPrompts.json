@@ -23,7 +23,7 @@
             "FORMATO GENERAL DE SALIDA: Utiliza formato multispeaker para gemini-tts, separa los parrafos con un salto de linea simple",
             "ORDEN: La primera noticia la debe presentar SUSANA y la ultima la presenta FINEAS, un locutor no puede tener dos lineas de dialogo consecutivas, siempre uno despues del otro",
             "RESUMEN No es necesario que incluyas todas las noticias que recibes, genera un resumen con a lo más 20 noticias y una buena cantidad de información por cada una",
-            "Siempre debes mencionar la fuente de la noticia"
+            "Siempre debes mencionar la fuente de la noticia y no des dos noticias consecutivas de la misma fuente"
         ]
     },
     "audioNoticiero": {

@@ -3,13 +3,13 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rssChannelRoutes from './src/app/routes/rssChannelRoutes';
 import noticierosRoutes from './src/app/routes/noticierosRoutes';
-import { errorHandler } from './src/app/middlewares/authMiddleware';
+import { authenticateJWT, errorHandler } from './src/app/middlewares/authMiddleware';
 
 // Cargar variables de entorno
 dotenv.config();
 
 // Validar variables de entorno requeridas
-const requiredEnvVars = ['GEMINI_API_KEY', 'CLOUDFLARE_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET_NAME', 'R2_REGION'];
+const requiredEnvVars = ['JWT_SECRET', 'GEMINI_API_KEY', 'CLOUDFLARE_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET_NAME', 'R2_REGION'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingVars.length > 0) {
@@ -31,16 +31,11 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/api/rss-channels', rssChannelRoutes);
-app.use('/api/noticieros', noticierosRoutes);
-
-// Health check endpoint
+// Public routes
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
 
-// Default route
 app.get('/', (req, res) => {
     res.json({
         message: 'Noticiero Finsus API',
@@ -52,6 +47,18 @@ app.get('/', (req, res) => {
         }
     });
 });
+
+
+// Aplicar autenticación por JWT si está habilitada
+if (process.env.JWT_AUTH_ON === "true") {
+    // Ejemplo protegiendo todas las rutas, se puede hacer a nivel de ruta y/o controlador
+    app.use('/api/rss-channels', authenticateJWT, rssChannelRoutes);
+    app.use('/api/noticieros', authenticateJWT, noticierosRoutes);
+} else {
+    // Si no está habilitada la autenticación por JWT, se deja sin protección
+    app.use('/api/rss-channels', rssChannelRoutes);
+    app.use('/api/noticieros', noticierosRoutes);
+}
 
 // Manejo de errores (debe ir después de las rutas)
 app.use(errorHandler);

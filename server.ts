@@ -49,8 +49,10 @@ app.get('/', (req, res) => {
 });
 
 
+const authOn = process.env.JWT_AUTH_ON === "true" ? true : false
+
 // Aplicar autenticación por JWT si está habilitada
-if (process.env.JWT_AUTH_ON === "true") {
+if (authOn) {
     // Ejemplo protegiendo todas las rutas, se puede hacer a nivel de ruta y/o controlador
     app.use('/api/rss-channels', authenticateJWT, rssChannelRoutes);
     app.use('/api/noticieros', authenticateJWT, noticierosRoutes);

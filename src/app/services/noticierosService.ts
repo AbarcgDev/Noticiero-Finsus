@@ -83,9 +83,11 @@ export class NoticieroService {
             AiPrompts.guionNoticiero.instruction.join("\n"),
             noticias.map((n: Noticia) => {
                 return `
-              TITULO: ${n.title}
-              CONTENIDO: ${n.content}
-              FUENTE: ${n.source}
+                {
+                    "titulo": ${n.title}
+                    "contenido": ${n.content}
+                    "fuente": ${n.source}
+                }
             `
             }
             ).join("\n\n"),

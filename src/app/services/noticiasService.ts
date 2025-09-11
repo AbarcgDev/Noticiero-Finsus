@@ -5,6 +5,8 @@ import * as cheerio from "cheerio";
 import { filterNews } from "../utils/filterNews.js";
 import { RssChannelService } from "./RssChannelService.js";
 
+const MAX_NEWS_PER_CHANNEL = 10;
+
 export class NoticiasService {
     private rssChannelService: RssChannelService;
 
@@ -23,23 +25,17 @@ export class NoticiasService {
     }
 
     async getNoticias(channels: RssChannel[]): Promise<Noticia[]> {
+        const noticiasBatch: Map<string, Noticia[]> = new Map();
         try {
-            const fetchPromises = channels.map(async (channel: RssChannel) => {
-                try {
-                    const xmlString = await this.getRssRaw(channel.url);
-                    console.log(`Processing channel ${channel.url}`);
-                    return this.extractNewsFromRss(xmlString);
-                } catch (error) {
-                    console.error(`Error processing channel ${channel.url}:`, error);
-                    return [];
-                }
-            });
-
-            const allNews = (await Promise.all(fetchPromises)).flat();
-            const filteredNews = filterNews(allNews)
-            console.log(`Se descartaron ${allNews.length - filteredNews.length} noticias`)
-            console.log(`Se enviarán ${filteredNews.length} noticias`)
-            return filteredNews;
+            for (const channel of channels) {
+                const xmlString = await this.getRssRaw(channel.url);
+                console.log(`Processing channel ${channel.url}`);
+                noticiasBatch
+                    .set(channel.name, filterNews(
+                        await this.extractNewsFromRss(xmlString)
+                    ).slice(0, MAX_NEWS_PER_CHANNEL)); // Usar las primeras 
+            }
+            return Array.from(noticiasBatch.values()).flat();
         } catch (error) {
             console.error("An unexpected error occurred in getNewsFromRSSSources:", error);
             return [];

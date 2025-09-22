@@ -135,14 +135,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-
-interface Fuente {
-    id?: number;
-    nombre: string;
-    url: string;
-    descripcion?: string;
-    activa: boolean;
-}
+import { 
+  getFuentes, 
+  createFuente, 
+  updateFuente, 
+  deleteFuente, 
+  type Fuente
+} from '../../controllers/fuentesController'
 
 const fuentes = ref<Fuente[]>([])
 const dialogo = ref(false)
@@ -164,21 +163,16 @@ const columnas = [
     { title: 'Acciones', key: 'actions', sortable: false }
 ]
 
-onMounted(() => {
-    cargarFuentes()
+onMounted(async () => {
+    await cargarFuentes()
 })
 
-function cargarFuentes() {
-    // Datos de ejemplo
-    fuentes.value = [
-        {
-            id: 1,
-            nombre: 'Ejemplo RSS',
-            url: 'https://ejemplo.com/feed',
-            descripcion: 'Fuente de ejemplo',
-            activa: true
-        }
-    ]
+const cargarFuentes = async () => {
+  try {
+    fuentes.value = await getFuentes()
+  } catch (error) {
+    console.error('Error al cargar las fuentes:', error)
+  }
 }
 
 function abrirDialogo(fuente?: Fuente) {
@@ -200,17 +194,26 @@ function cerrarDialogo() {
 async function guardarFuente() {
     try {
         if (esEdicion.value) {
-            const index = fuentes.value.findIndex(f => f.id === fuenteActual.value.id)
-            if (index !== -1) {
-                fuentes.value[index] = { ...fuenteActual.value } as Fuente
-            }
+            if (!fuenteActual.value.id) return
+            await updateFuente(
+              fuenteActual.value.id,
+              {
+                nombre: fuenteActual.value.nombre,
+                url: fuenteActual.value.url,
+                descripcion: fuenteActual.value.descripcion,
+                activa: fuenteActual.value.activa
+              }
+            )
         } else {
-            const nuevaFuente = {
-                ...fuenteActual.value,
-                id: Math.floor(Math.random() * 1000)
-            } as Fuente
-            fuentes.value.push(nuevaFuente)
+            const payload: Omit<Fuente, 'id'> = {
+              nombre: fuenteActual.value.nombre || '',
+              url: fuenteActual.value.url || '',
+              descripcion: fuenteActual.value.descripcion || '',
+              activa: !!fuenteActual.value.activa,
+            }
+            await createFuente(payload)
         }
+        await cargarFuentes()
         cerrarDialogo()
     } catch (error) {
         console.error('Error al guardar la fuente:', error)
@@ -222,16 +225,15 @@ function confirmarEliminar(fuente: Fuente) {
     dialogoConfirmacion.value = true
 }
 
-async function eliminarFuente() {
-    if (!fuenteAEliminar.value) return
-
-    try {
-        fuentes.value = fuentes.value.filter(f => f.id !== fuenteAEliminar.value?.id)
-    } catch (error) {
-        console.error('Error al eliminar la fuente:', error)
-    } finally {
-        dialogoConfirmacion.value = false
-        fuenteAEliminar.value = null
-    }
+const eliminarFuente = async () => {
+  if (!fuenteAEliminar.value) return
+  
+  try {
+    await deleteFuente(fuenteAEliminar.value.id!)
+    await cargarFuentes()
+    dialogoConfirmacion.value = false
+  } catch (error) {
+    console.error('Error al eliminar la fuente:', error)
+  }
 }
 </script>

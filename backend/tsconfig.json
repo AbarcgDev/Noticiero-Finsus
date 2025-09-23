@@ -8,28 +8,28 @@
         "baseUrl": ".",
         "paths": {
             "@/*": [
-                "src/app/*"
+                "./src/app/*"
             ],
             "@utils/*": [
-                "src/app/utils/*"
+                "./src/app/utils/*"
             ],
             "@models/*": [
-                "src/app/models/*"
+                "/src/app/models/*"
             ],
             "@controllers/*": [
-                "src/app/controllers/*"
+                "/src/app/controllers/*"
             ],
             "@config/*": [
-                "src/app/config/*"
+                "/src/app/config/*"
             ],
             "@services/*": [
-                "src/app/services/*"
+                "/src/app/services/*"
             ],
             "@middlewares/*": [
-                "src/app/middlewares/*"
+                "/src/app/middlewares/*"
             ],
             "@routes/*": [
-                "src/app/routes/*"
+                "/src/app/routes/*"
             ]
         },
         "allowJs": true,
@@ -38,10 +38,9 @@
         "resolveJsonModule": true
     },
     "include": [
-        "src/**/*"
+        "./src/**/*"
     ],
     "exclude": [
-        "node_modules",
         "dist"
     ]
 }

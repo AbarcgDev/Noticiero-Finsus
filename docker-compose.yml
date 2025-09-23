@@ -23,7 +23,9 @@ services:
 
   # RSS News Aggregator App
   app:
-    build: .
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: noticiero-app
     restart: unless-stopped
     ports:

@@ -20,7 +20,7 @@ export class FileStorageController {
             }
 
             const fileUrl = await this.fileStorageService.uploadImage(fileName, fileBuffer, contentType);
-            
+
             res.status(200).json({
                 success: true,
                 fileUrl,
@@ -39,10 +39,10 @@ export class FileStorageController {
             const { expiresIn } = req.query;
 
             const fileUrl = await this.fileStorageService.getFileUrl(
-                key, 
+                key,
                 expiresIn ? parseInt(expiresIn as string) : 3600
             );
-            
+
             res.status(200).json({
                 success: true,
                 fileUrl
@@ -64,7 +64,7 @@ export class FileStorageController {
                 contentType,
                 expiresIn ? parseInt(expiresIn as string) : 3600
             );
-            
+
             res.status(200).json({
                 success: true,
                 uploadUrl
@@ -79,9 +79,9 @@ export class FileStorageController {
     async listFiles(req: Request, res: Response): Promise<void> {
         try {
             const { prefix } = req.query;
-            
+
             const files = await this.fileStorageService.listFiles(prefix as string);
-            
+
             res.status(200).json({
                 success: true,
                 files
@@ -96,9 +96,9 @@ export class FileStorageController {
     async deleteFile(req: Request, res: Response): Promise<void> {
         try {
             const { key } = req.params;
-            
+
             await this.fileStorageService.deleteFile(key);
-            
+
             res.status(200).json({
                 success: true,
                 message: 'File deleted successfully'
@@ -113,9 +113,9 @@ export class FileStorageController {
     async getFileInfo(req: Request, res: Response): Promise<void> {
         try {
             const { key } = req.params;
-            
+
             const fileInfo = await this.fileStorageService.getFileInfo(key);
-            
+
             res.status(200).json({
                 success: true,
                 fileInfo

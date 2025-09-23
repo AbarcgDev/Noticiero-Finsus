@@ -23,6 +23,8 @@
     "@aws-sdk/s3-request-presigner": "^3.883.0",
     "@google/genai": "^1.18.0",
     "@google/generative-ai": "^0.21.0",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
     "cheerio": "^1.1.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rssChannelRoutes from './src/app/routes/rssChannelRoutes';
 import noticierosRoutes from './src/app/routes/noticierosRoutes';
+import loginRoutes from './src/app/routes/loginRoutes';
 import { authenticateJWT, errorHandler } from './src/app/middlewares/authMiddleware';
 
 // Cargar variables de entorno
@@ -35,6 +36,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
+
+app.use('/api/login', loginRoutes);
 
 app.get('/', (req, res) => {
     res.json({

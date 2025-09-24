@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../services/api';
 
 export interface Noticiero {
   id?: string;
@@ -9,16 +9,13 @@ export interface Noticiero {
   fechaCreacion?: string;
 }
 
-// Usa '/api' por defecto si la variable de entorno no fue inyectada en build
-const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api';
-
 /**
  * Obtiene todos los noticieros
  * @returns Promise con el array de noticieros
  */
 export const getNoticieros = async (): Promise<Noticiero[]> => {
   try {
-    const response = await axios.get(`${API_URL}/noticieros`);
+    const response = await api.get(`/noticieros`);
     // Backend responde { success: boolean, data: Noticiero[] }
     return response.data?.data ?? [];
   } catch (error) {
@@ -34,7 +31,7 @@ export const getNoticieros = async (): Promise<Noticiero[]> => {
  */
 export const getNoticieroById = async (id: string): Promise<Noticiero> => {
   try {
-    const response = await axios.get(`${API_URL}/noticieros/${id}`);
+    const response = await api.get(`/noticieros/${id}`);
     // Backend responde { success: boolean, data: Noticiero }
     return response.data?.data as Noticiero;
   } catch (error) {
@@ -50,7 +47,7 @@ export const getNoticieroById = async (id: string): Promise<Noticiero> => {
  */
 export const createNoticiero = async (noticiero: Omit<Noticiero, 'id'>): Promise<Noticiero> => {
   try {
-    const response = await axios.post(`${API_URL}/noticieros`, noticiero);
+    const response = await api.post(`/noticieros`, noticiero);
     // Backend responde { success: boolean, data: Noticiero }
     return response.data?.data as Noticiero;
   } catch (error) {
@@ -67,7 +64,7 @@ export const createNoticiero = async (noticiero: Omit<Noticiero, 'id'>): Promise
  */
 export const updateNoticiero = async (id: string, noticiero: Partial<Noticiero>): Promise<Noticiero> => {
   try {
-    const response = await axios.put(`${API_URL}/noticieros/${id}`, noticiero);
+    const response = await api.put(`/noticieros/${id}`, noticiero);
     // Backend responde { success: boolean, data: Noticiero }
     return response.data?.data as Noticiero;
   } catch (error) {
@@ -83,7 +80,7 @@ export const updateNoticiero = async (id: string, noticiero: Partial<Noticiero>)
  */
 export const deleteNoticiero = async (id: string): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/noticieros/${id}`);
+    await api.delete(`/noticieros/${id}`);
   } catch (error) {
     console.error(`Error al eliminar el noticiero con ID ${id}:`, error);
     throw error;
@@ -97,8 +94,8 @@ export const deleteNoticiero = async (id: string): Promise<void> => {
  */
 export const publicarNoticiero = async (id: string): Promise<Noticiero> => {
   try {
-    const response = await axios.patch(
-      `${API_URL}/noticieros/${id}/publish`
+    const response = await api.patch(
+      `/noticieros/${id}/publish`
     );
     // Backend responde { success: boolean, message: string } actualmente.
     // Para consistencia, volvemos a consultar el noticiero actualizado.
@@ -122,8 +119,8 @@ export const publicarNoticiero = async (id: string): Promise<Noticiero> => {
  */
 export const rechazarNoticiero = async (id: string): Promise<Noticiero> => {
   try {
-    const response = await axios.patch(
-      `${API_URL}/noticieros/${id}/reject`
+    const response = await api.patch(
+      `/noticieros/${id}/reject`
     );
     // Backend responde { success: boolean, message: string } actualmente.
     // Para consistencia, volvemos a consultar el noticiero actualizado.
@@ -146,7 +143,7 @@ export const rechazarNoticiero = async (id: string): Promise<Noticiero> => {
  */
 export const getNoticierosByState = async (state: Noticiero['state']): Promise<Noticiero[]> => {
   try {
-    const response = await axios.get(`${API_URL}/noticieros/estado/${state}`);
+    const response = await api.get(`/noticieros/estado/${state}`);
     // Backend responde { success: boolean, data: Noticiero[] }
     return response.data?.data ?? [];
   } catch (error) {

@@ -47,6 +47,7 @@ const router = createRouter({
         {
             path: '/admin',
             component: AdminLayout,
+            meta: { requiresAuth: true },
             children: [
                 ...adminRoutes,
                 {
@@ -56,17 +57,31 @@ const router = createRouter({
             ]
         },
         {
-            path: '/',
+            path: '/login',
+            name: 'login',
             component: LoginView,
-            children: [
-                ...loginRoutes,
-                {
-                    path: '',
-                    redirect: { name: 'login' }
-                }
-            ],
+            meta: {
+                title: 'Iniciar Sesión',
+                icon: 'mdi-login',
+                showInMenu: false
+            }
+        },
+        {
+            path: '/',
+            redirect: { name: 'login' }
         }
     ]
+})
+
+// Maneja el redireccionamiento al login si el usuario no tiene credenciales.
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+    const isAuthenticated = localStorage.getItem('token') !== null
+    if (requiresAuth && !isAuthenticated) {
+        next({ name: 'login' })
+    } else {
+        next()
+    }
 })
 
 export default router

@@ -9,6 +9,12 @@
     "src/**/__tests__/*"
   ],
   "compilerOptions": {
+    "jsx": "preserve",
+    // 2. Le dice a TS que no revise los archivos de definición de las librerías (soluciona los errores de GlobalComponents)
+    "skipLibCheck": true,
+    // 3. Establece una versión moderna de JS como objetivo (soluciona errores de sintaxis como los "private identifiers")
+    "target": "ESNext",
+    // --- Tus opciones existentes (están correctas) ---
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",
@@ -20,6 +26,12 @@
     "moduleResolution": "Bundler",
     "types": [
       "vite/client"
+    ],
+    // Es buena práctica también añadir esto para asegurar que los tipos del DOM estén disponibles
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
     ]
   }
 }

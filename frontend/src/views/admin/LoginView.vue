@@ -11,6 +11,7 @@
               <v-card-text>
                 <form @submit.prevent="handleLogin">
                   <v-text-field
+                    v-model="username"
                     label="Username"
                     type="text"
                     variant="outlined"
@@ -94,7 +95,8 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, watch } from 'vue';
+  import router from '../../router';
+import { ref, watch } from 'vue';
   
   // --- Props y Emits ---
   // El componente acepta un error desde el padre (ej. error de API)
@@ -111,7 +113,7 @@
   
   // --- Estado Reactivo Interno ---
   const isLoginView = ref(true);
-  const email = ref('');
+  const username = ref('');
   const password = ref('');
   const errorMessage = ref(''); // Muestra errores de validación local o de la API
   
@@ -124,20 +126,35 @@
   });
   
   // --- Métodos ---
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Validación básica antes de emitir
-    if (!email.value || !password.value) {
+    if (!username.value || !password.value) {
       errorMessage.value = 'Por favor, completa todos los campos.';
       return;
     }
     errorMessage.value = ''; // Limpia el error antes de emitir
     // Emite los datos al componente padre para que maneje la lógica de login
-    emit('login-submitted', { email: email.value, password: password.value });
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username: username.value, password: password.value }),
+    });
+    if (response.ok) {
+      const payload = await response.json();
+      localStorage.setItem('username', payload.data.username);
+      localStorage.setItem('token', payload.data.jwt);
+      emit('login-submitted');
+      router.push('/admin');
+    } else {
+      errorMessage.value = 'Error al iniciar sesión.';
+    }
   };
   
   const handleRegister = () => {
     // Validación básica antes de emitir
-    if (!email.value || !password.value) {
+    if (!username.value || !password.value) {
       errorMessage.value = 'Por favor, completa todos los campos.';
       return;
     }
@@ -147,7 +164,7 @@
     }
     errorMessage.value = ''; // Limpia el error antes de emitir
     // Emite los datos al componente padre para que maneje la lógica de registro
-    emit('register-submitted', { email: email.value, password: password.value });
+    emit('register-submitted', { username: username.value, password: password.value });
   };
   
   // Cambia entre la vista de login y registro
@@ -155,7 +172,7 @@
     isLoginView.value = !isLoginView.value;
     // Limpia los campos y errores al cambiar de vista
     errorMessage.value = '';
-    email.value = '';
+    username.value = '';
     password.value = '';
   };
   </script>

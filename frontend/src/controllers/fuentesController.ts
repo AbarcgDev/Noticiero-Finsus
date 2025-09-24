@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../services/api';
 
 export interface Fuente {
   id?: string;
@@ -8,9 +8,6 @@ export interface Fuente {
   activa: boolean;
   ultimaActualizacion?: string;
 }
-
-// Usa '/api' por defecto si la variable de entorno no fue inyectada en build
-const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api';
 
 // Normaliza posibles respuestas del backend (array directo o envuelto en { data })
 function normalizeArray<T>(data: any): T[] {
@@ -47,7 +44,7 @@ function mapToApi(fuente: Partial<Fuente>): any {
  */
 export const getFuentes = async (): Promise<Fuente[]> => {
   try {
-    const response = await axios.get(`${API_URL}/rss-channels`);
+    const response = await api.get(`/rss-channels`);
     const arr = normalizeArray<any>(response.data);
     return arr.map(mapFromApi);
   } catch (error) {
@@ -64,7 +61,7 @@ export const getFuentes = async (): Promise<Fuente[]> => {
 export const createFuente = async (fuente: Omit<Fuente, 'id'>): Promise<Fuente> => {
   try {
     const payload = mapToApi(fuente);
-    const response = await axios.post(`${API_URL}/rss-channels`, payload);
+    const response = await api.post(`/rss-channels`, payload);
     return mapFromApi(response.data);
   } catch (error) {
     console.error('Error al crear la fuente:', error);
@@ -81,7 +78,7 @@ export const createFuente = async (fuente: Omit<Fuente, 'id'>): Promise<Fuente> 
 export const updateFuente = async (id: string, fuente: Partial<Fuente>): Promise<Fuente> => {
   try {
     const payload = mapToApi(fuente);
-    const response = await axios.put(`${API_URL}/rss-channels/${id}`, payload);
+    const response = await api.put(`/rss-channels/${id}`, payload);
     return mapFromApi(response.data);
   } catch (error) {
     console.error(`Error al actualizar la fuente con ID ${id}:`, error);
@@ -96,7 +93,7 @@ export const updateFuente = async (id: string, fuente: Partial<Fuente>): Promise
  */
 export const deleteFuente = async (id: string): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/rss-channels/${id}`);
+    await api.delete(`/rss-channels/${id}`);
   } catch (error) {
     console.error(`Error al eliminar la fuente con ID ${id}:`, error);
     throw error;
@@ -111,7 +108,7 @@ export const deleteFuente = async (id: string): Promise<void> => {
  */
 export const toggleFuenteEstado = async (id: string, activa: boolean): Promise<Fuente> => {
   try {
-    const response = await axios.patch(`${API_URL}/rss-channels/${id}/estado`, { isActive: activa });
+    const response = await api.patch(`/rss-channels/${id}/estado`, { isActive: activa });
     return mapFromApi(response.data);
   } catch (error) {
     console.error(`Error al actualizar el estado de la fuente con ID ${id}:`, error);
@@ -126,7 +123,7 @@ export const toggleFuenteEstado = async (id: string, activa: boolean): Promise<F
  */
 export const sincronizarFuente = async (id: string): Promise<any> => {
   try {
-    const response = await axios.post(`${API_URL}/rss-channels/${id}/sincronizar`);
+    const response = await api.post(`/rss-channels/${id}/sincronizar`);
     return response.data;
   } catch (error) {
     console.error(`Error al sincronizar la fuente con ID ${id}:`, error);

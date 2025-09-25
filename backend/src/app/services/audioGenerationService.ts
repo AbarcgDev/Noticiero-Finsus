@@ -7,14 +7,27 @@ import ffmpegStatic from 'ffmpeg-static';
 import ffmpeg from 'fluent-ffmpeg';
 import { FileStorageService } from "./fileStorageService";
 import AiPrompts from "../utils/AiPrompts.json" with { type: "json" };
+import { IAConfigurationFields } from "../models/IAConfiguration";
+import { ConfigurationService } from "../services/configurationService";
 
 export class AudioGenerationService {
     private apiKey: string;
     private fileStorageService: FileStorageService;
+    private aiConfiguration: Omit<IAConfigurationFields, 'id' | 'censoredWords'>;
+    private aiConfigurationsService: ConfigurationService;
 
     constructor() {
         this.apiKey = process.env.GEMINI_API_KEY || '';
         this.fileStorageService = new FileStorageService();
+        this.aiConfigurationsService = new ConfigurationService();
+    }
+
+    private async initConfig(): Promise<void> {
+        this.aiConfiguration = {
+            channelName: await this.aiConfigurationsService.getChannelName(),
+            malePresenter: await this.aiConfigurationsService.getMalePresenter(),
+            femalePresenter: await this.aiConfigurationsService.getFemalePresenter(),
+        };
     }
 
     async generateAudio(noticieroId: string, content: string): Promise<void> {
@@ -22,7 +35,10 @@ export class AudioGenerationService {
         try {
             // Obtener el audio WAV en base64 de la API
             const audioBase64 = await this.generateAudioWithAI(
-                AiPrompts.audioNoticiero.instruction.join('\n'),
+                AiPrompts.audioNoticiero.instruction.join('\n')
+                    .replace('__CHANNEL_NAME__', this.aiConfiguration.channelName)
+                    .replace('__MALE_PRESENTER__', this.aiConfiguration.malePresenter)
+                    .replace('__FEMALE_PRESENTER__', this.aiConfiguration.femalePresenter),
                 content,
                 this.apiKey
             );
@@ -86,13 +102,13 @@ export class AudioGenerationService {
                         multiSpeakerVoiceConfig: {
                             speakerVoiceConfigs: [
                                 {
-                                    speaker: 'FINEAS',
+                                    speaker: this.aiConfiguration.malePresenter.toUpperCase(),
                                     voiceConfig: {
                                         prebuiltVoiceConfig: { voiceName: 'Charon' }
                                     }
                                 },
                                 {
-                                    speaker: 'SUSANA',
+                                    speaker: this.aiConfiguration.femalePresenter.toUpperCase(),
                                     voiceConfig: {
                                         prebuiltVoiceConfig: { voiceName: 'Leda' }
                                     }

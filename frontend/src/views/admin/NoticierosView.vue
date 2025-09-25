@@ -144,81 +144,125 @@
 
     <!-- Diálogo para crear/editar noticiero -->
     <v-dialog v-model="dialogoNoticiero" max-width="800px" persistent>
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">{{ esEdicion ? 'Editar' : 'Nuevo' }} Noticiero</span>
-        </v-card-title>
-        <v-card-text>
-          <v-form v-model="formularioValido" ref="formulario">
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    v-model="noticieroActual.title"
-                    label="Título"
-                    :rules="[v => !!v || 'El título es requerido']"
-                    required
-                    variant="outlined"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-textarea
-                    v-model="noticieroActual.guion"
-                    label="Guión"
-                    :rules="[v => !!v || 'El guión es requerido']"
-                    required
-                    variant="outlined"
-                    rows="10"
-                    auto-grow
-                  ></v-textarea>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-menu
-                    v-model="menuFecha"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ props }">
-                      <v-text-field
-                        v-model="noticieroActual.publicationDate"
-                        label="Fecha de publicación"
-                        prepend-inner-icon="mdi-calendar"
-                        readonly
-                        v-bind="props"
-                        variant="outlined"
-                        :rules="[v => !!v || 'La fecha es requerida']"
-                        required
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="noticieroActual.publicationDate"
-                      @input="menuFecha = false"
-                      locale="es"
-                    ></v-date-picker>
-                  </v-menu>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="grey" text @click="cerrarDialogo">
-            Cancelar
-          </v-btn>
-          <v-btn
-            color="primary"
-            :loading="guardando"
-            @click="guardarNoticiero"
-          >
-            {{ esEdicion ? 'Actualizar' : 'Guardar' }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-card>
+    <v-card-title>
+      <span class="text-h5">{{ esEdicion ? 'Editar' : 'Generar Nuevo' }} Noticiero</span>
+    </v-card-title>
+
+    <v-card-text>
+      <v-form v-if="esEdicion" v-model="formularioValido">
+        </v-form>
+
+      <v-form v-else v-model="formularioValido">
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <h3 class="text-subtitle-1 font-weight-bold mb-2">Parámetros</h3>
+            </v-col>
+
+            <v-col cols="12">
+              <v-text-field
+                v-model="parametrosIA.channelName"
+                label="Nombre del canal"
+                variant="outlined"
+                :rules="[v => !!v || 'El nombre del canal es requerido']"
+                required
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <h4 class="text-subtitle-2 mb-1">Nombres de presentadores</h4>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="parametrosIA.malePresenter"
+                label="Masculino"
+                variant="outlined"
+                :rules="[v => !!v || 'El nombre es requerido']"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="parametrosIA.femalePresenter"
+                label="Femenino"
+                variant="outlined"
+                :rules="[v => !!v || 'El nombre es requerido']"
+                required
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <v-expansion-panels variant="accordion">
+                <v-expansion-panel>
+                  <v-expansion-panel-title>
+                    Censura ({{ censoredWords.length }} palabras)
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text>
+                    <v-row>
+                      <v-col cols="12" sm="8">
+                        <v-text-field
+                          v-model="newCensoredWord"
+                          label="Añadir palabra o frase a censurar"
+                          variant="outlined"
+                          density="compact"
+                          hide-details
+                          @keydown.enter.prevent="addCensoredWord"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <v-btn
+                          color="primary"
+                          @click="addCensoredWord"
+                          block
+                          :disabled="!newCensoredWord"
+                        >Añadir</v-btn>
+                      </v-col>
+                    </v-row>
+                    <v-list class="mt-4" v-if="censoredWords.length > 0">
+                      <v-list-item
+                        v-for="word in censoredWords"
+                        :key="word.id"
+                        :title="word.text"
+                      >
+                        <template v-slot:append>
+                          <v-btn
+                            icon
+                            variant="text"
+                            color="error"
+                            size="small"
+                            @click="deleteCensoredWord(word.id)"
+                          >
+                            <v-icon>mdi-delete</v-icon>
+                          </v-btn>
+                        </template>
+                      </v-list-item>
+                    </v-list>
+                    <p v-else class="text-center text-grey mt-4">No hay palabras censuradas.</p>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-col>
+
+          </v-row>
+        </v-container>
+      </v-form>
+    </v-card-text>
+
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="grey" text @click="cerrarDialogo">Cancelar</v-btn>
+      <v-btn
+        color="primary"
+        :loading="guardando"
+        @click="guardarNoticiero"
+        :disabled="!formularioValido"
+      >
+        {{ esEdicion ? 'Actualizar' : 'Generar con IA' }}
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 
     <!-- Diálogo de confirmación para eliminar -->
     <v-dialog v-model="dialogoConfirmacion" max-width="500px">
@@ -295,29 +339,31 @@
 import { ref, onMounted } from 'vue'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { 
-  getNoticieros, 
-  createNoticiero, 
-  updateNoticiero, 
-  deleteNoticiero, 
+import {
+  getNoticieros,
+  createNoticiero,
+  updateNoticiero,
+  deleteNoticiero,
   publicarNoticiero as publicarNoticieroAPI,
   type Noticiero
 } from '../../controllers/noticierosController'
 
-// Base URL para API (usa '/api' por defecto si no hay env)
+// Base URL para API
 const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api'
 
-// Tipos - Importado desde el controlador
+// --- NUEVO ESTADO PARA PARÁMETROS DE IA ---
+const parametrosIA = ref({
+  channelName: '',
+  malePresenter: '',
+  femalePresenter: '',
+})
+const censoredWords = ref<{ id: number; text: string }[]>([])
+const newCensoredWord = ref('')
+
+// --- Estado existente ---
 const noticieros = ref<Noticiero[]>([])
 const noticierosFiltrados = ref<Noticiero[]>([])
-const noticieroActual = ref<Partial<Noticiero>>({
-  title: '',
-  guion: '',
-  state: 'PENDING',
-  publicationDate: new Date().toISOString().substr(0, 10)
-})
-
-// UI State
+const noticieroActual = ref<Partial<Noticiero>>({})
 const cargando = ref(false)
 const guardando = ref(false)
 const eliminando = ref(false)
@@ -327,71 +373,76 @@ const dialogoNoticiero = ref(false)
 const dialogoConfirmacion = ref(false)
 const dialogoDetalles = ref(false)
 const esEdicion = ref(false)
-const menuFecha = ref(false)
 const formularioValido = ref(false)
 const busqueda = ref('')
 const filtroEstado = ref<string | null>(null)
 
-// Constantes
+// --- Constantes (sin cambios) ---
 const columnas = [
   { title: 'Título', key: 'title' },
   { title: 'Estado', key: 'state' },
   { title: 'Fecha de Creación', key: 'fechaCreacion' },
   { title: 'Acciones', key: 'actions', sortable: false }
 ]
-
 const estados = [
   { title: 'Pendiente', value: 'PENDING' },
   { title: 'Publicado', value: 'PUBLISHED' },
   { title: 'Rechazado', value: 'REJECTED' }
 ]
 
-// Métodos
-const formatearFecha = (fecha?: string) => {
+// --- Métodos de formato (sin cambios) ---
+const formatearFecha = (fecha?: string | Date) => {
   if (!fecha) return ''
   return format(new Date(fecha), 'PPpp', { locale: es })
 }
-
 const formatearEstado = (estado?: string) => {
   if (!estado) return ''
   const estadoObj = estados.find(e => e.value === estado)
   return estadoObj ? estadoObj.title : estado
 }
-
 const obtenerColorEstado = (estado?: string) => {
   switch (estado) {
-    case 'PUBLISHED':
-      return 'success'
-    case 'REJECTED':
-      return 'error'
-    default:
-      return 'warning' // PENDING
+    case 'PUBLISHED': return 'success'
+    case 'REJECTED': return 'error'
+    default: return 'warning'
   }
+}
+
+// --- Métodos de la UI (con modificaciones) ---
+
+// NUEVOS MÉTODOS PARA LA CENSURA
+const addCensoredWord = () => {
+  if (newCensoredWord.value.trim() === '') return
+  censoredWords.value.push({
+    id: Date.now(), // ID simple para el ejemplo
+    text: newCensoredWord.value.trim()
+  })
+  newCensoredWord.value = '' // Limpiar el campo
+}
+const deleteCensoredWord = (id: number) => {
+  censoredWords.value = censoredWords.value.filter(word => word.id !== id)
 }
 
 const filtrarNoticieros = () => {
   let filtrados = [...noticieros.value]
-  
   if (busqueda.value) {
     const busquedaLower = busqueda.value.toLowerCase()
-    filtrados = filtrados.filter(noticiero => 
+    filtrados = filtrados.filter(noticiero =>
       noticiero.title.toLowerCase().includes(busquedaLower) ||
       noticiero.guion.toLowerCase().includes(busquedaLower)
     )
   }
-  
   if (filtroEstado.value) {
     filtrados = filtrados.filter(noticiero => noticiero.state === filtroEstado.value)
   }
-  
   noticierosFiltrados.value = filtrados
 }
 
 const cargarNoticieros = async () => {
+  cargando.value = true
   try {
-    cargando.value = true
     noticieros.value = await getNoticieros()
-    noticierosFiltrados.value = [...noticieros.value]
+    filtrarNoticieros() // Usar la función de filtro para actualizar la tabla
   } catch (error) {
     console.error('Error al cargar noticieros:', error)
   } finally {
@@ -399,14 +450,16 @@ const cargarNoticieros = async () => {
   }
 }
 
+// MODIFICADO: Ahora resetea los parámetros de la IA
 const abrirDialogoCrear = () => {
   esEdicion.value = false
-  noticieroActual.value = {
-    title: '',
-    guion: '',
-    state: 'PENDING',
-    publicationDate: new Date().toISOString().substr(0, 10)
+  parametrosIA.value = {
+    channelName: '',
+    malePresenter: '',
+    femalePresenter: '',
   }
+  censoredWords.value = []
+  noticieroActual.value = {}
   dialogoNoticiero.value = true
 }
 
@@ -418,26 +471,28 @@ const editarNoticiero = (noticiero: Noticiero) => {
 
 const cerrarDialogo = () => {
   dialogoNoticiero.value = false
-  setTimeout(() => {
-    noticieroActual.value = {
-      title: '',
-      guion: '',
-      state: 'PENDING',
-      publicationDate: new Date().toISOString().substr(0, 10)
-    }
-  }, 300)
 }
 
+// MODIFICADO: Ahora maneja ambos casos (Crear con IA y Editar)
 const guardarNoticiero = async () => {
+  if (!formularioValido.value) return;
+
+  guardando.value = true
   try {
-    guardando.value = true
-    
     if (esEdicion.value && noticieroActual.value.id) {
+      // Lógica de actualización (si la mantienes)
       await updateNoticiero(noticieroActual.value.id, noticieroActual.value)
     } else {
-      await createNoticiero(noticieroActual.value as Omit<Noticiero, 'id'>)
+      // Nueva lógica para generar con IA
+      console.log('Enviando para generar con IA:')
+      // La función createNoticiero ahora recibirá estos parámetros
+      await createNoticiero({
+        title: noticieroActual.value.title ?? '',
+        guion: noticieroActual.value.guion ?? '',
+        state: noticieroActual.value.state ?? 'PENDING',
+        publicationDate: noticieroActual.value.publicationDate ?? new Date().toISOString().substr(0, 10),
+        })
     }
-    
     await cargarNoticieros()
     cerrarDialogo()
   } catch (error) {

@@ -5,22 +5,37 @@ import AiPrompts from "../utils/AiPrompts.json" with { type: "json" };
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import NoticieroMySqlRepository from "../persist/noticierosMySqlRepo.js";
 import { INoticierosRepository } from "../persist/repository/INoticierosRepository.js";
+import { ConfigurationService } from "../services/configurationService.js";
+import { IAConfigurationFields } from "../models/IAConfiguration.js";
 
 export class NoticieroService {
     private noticiasService: NoticiasService;
     private noticierosRepository: INoticierosRepository;
     private apiKey: string;
+    private configurationService: ConfigurationService;
+    private aiConfig: Omit<IAConfigurationFields, 'id'>;
 
     constructor() {
         this.noticiasService = new NoticiasService();
         this.noticierosRepository = new NoticieroMySqlRepository();
         this.apiKey = process.env.GEMINI_API_KEY || '';
+        this.configurationService = new ConfigurationService();
+    }
+
+    private async initConfig(): Promise<void> {
+        this.aiConfig = {
+            malePresenter: (await this.configurationService.getMalePresenter()).toUpperCase(),
+            femalePresenter: (await this.configurationService.getFemalePresenter()).toUpperCase(),
+            channelName: await this.configurationService.getChannelName(),
+            censoredWords: await this.configurationService.getCensoredWords()
+        }
     }
 
     async generateNoticieroDraft(): Promise<Noticiero> {
-        const noticias = await this.noticiasService.fetchLatestNews();
+        await this.initConfig();
+        const noticias = await this.noticiasService.fetchLatestNews(this.aiConfig.censoredWords);
         const noticiero = this.noticierosRepository.create({
-            title: 'Noticiero Finsus ' + new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+            title: 'Noticiero' + new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
             guion: await this.generateGuionWithAI(noticias, this.apiKey),
             state: NoticieroState.PENDING,
             publicationDate: new Date(),
@@ -69,18 +84,30 @@ export class NoticieroService {
     }
 
     private async generateGuionWithAI(noticias: Noticia[], apiKey: string): Promise<string> {
+        const bienvenida = AiPrompts.bienvenida.join("\n\n")
+            .replace("__CHANNEL_NAME__", this.aiConfig.channelName)
+            .replace("__MALE_PRESENTER__", this.aiConfig.malePresenter)
+            .replace("__FEMALE_PRESENTER__", this.aiConfig.femalePresenter);
+        const despedida = AiPrompts.despedida.join("\n\n")
+            .replace("__CHANNEL_NAME__", this.aiConfig.channelName)
+            .replace("__MALE_PRESENTER__", this.aiConfig.malePresenter)
+            .replace("__FEMALE_PRESENTER__", this.aiConfig.femalePresenter);
         const guionContent = await this.callTextGenerationService(this.generatePrompt(noticias), apiKey);
         return [
-            AiPrompts.bienvenida.join("\n\n"),
+            bienvenida,
             guionContent,
-            AiPrompts.despedida.join("\n\n")
+            despedida
         ].join("\n\n");
     }
 
     private generatePrompt(noticias: Noticia[]): string {
+        const instructions = AiPrompts.guionNoticiero.instruction.join("\n")
+            .replace("__CHANNEL_NAME__", this.aiConfig.channelName)
+            .replace("__MALE_PRESENTER__", this.aiConfig.malePresenter)
+            .replace("__FEMALE_PRESENTER__", this.aiConfig.femalePresenter);
         const prompt = [
             AiPrompts.guionNoticiero.context.join("\n"),
-            AiPrompts.guionNoticiero.instruction.join("\n"),
+            instructions,
             noticias.map((n: Noticia) => {
                 return `
                 {

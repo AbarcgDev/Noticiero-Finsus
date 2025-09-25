@@ -1,8 +1,9 @@
 import { Noticia } from "../models/Noticia";
 
-export const filterNews = (noticias: Noticia[]): Noticia[] => {
+export const filterNews = (noticias: Noticia[], censoredWords: string[]): Noticia[] => {
     return filterByCensor(
-        filterByDate(noticias)
+        filterByDate(noticias),
+        censoredWords
     )
 }
 
@@ -13,40 +14,12 @@ const filterByDate = (noticias: Noticia[]): Noticia[] => {
     return noticias.filter(noticia => noticia.publicationDate >= sevenDaysAgo);
 }
 
-const filterByCensor = (noticias: Noticia[]) => {
-    const censorList = [
-        "sheinbaum",
-        "amlo",
-        "lopez obrador",
-        "violencia",
-        "drogas",
-        "asesinato",
-        "politica",
-        "stori",
-        "nubank",
-        "santander",
-        "banamex",
-        "bbva",
-        "spin",
-        "nacional financiera",
-        "nu méxico",
-        "extorsion",
-        "terrorismo",
-        "terrorista",
-        "encarcelado",
-        "encarcelada",
-        "encarcelamiento",
-        "ikarus fx",
-        "icarus fx",
-        "icarus",
-        "ikarus",
-    ];
-
+const filterByCensor = (noticias: Noticia[], censoredWords: string[]) => {
     return noticias.filter((noticia: Noticia) => {
         const title = noticia.title.toLowerCase();
         const body = noticia.content.toLowerCase();
-        return !censorList.some((censorWord) => {
-            return title.includes(censorWord) || body.includes(censorWord);
+        return !censoredWords.some((censoredWord) => {
+            return title.includes(censoredWord.toLowerCase()) || body.includes(censoredWord.toLowerCase());
         });
     });
 };

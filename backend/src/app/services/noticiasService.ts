@@ -14,17 +14,17 @@ export class NoticiasService {
         this.rssChannelService = new RssChannelService();
     }
 
-    async fetchLatestNews(): Promise<Noticia[]> {
+    async fetchLatestNews(censoredWords: string[]): Promise<Noticia[]> {
         const activeChannels = await this.rssChannelService.getActiveChannels();
-        return await this.getNoticias(activeChannels);
+        return await this.getNoticias(activeChannels, censoredWords);
     }
 
-    async fetchNewsBySource(source: string): Promise<Noticia[]> {
+    async fetchNewsBySource(source: string, censoredWords: string[]): Promise<Noticia[]> {
         const channels = await this.rssChannelService.getAllChannels();
-        return await this.getNoticias(channels);
+        return await this.getNoticias(channels, censoredWords);
     }
 
-    async getNoticias(channels: RssChannel[]): Promise<Noticia[]> {
+    async getNoticias(channels: RssChannel[], censoredWords: string[]): Promise<Noticia[]> {
         const noticiasBatch: Map<string, Noticia[]> = new Map();
         try {
             for (const channel of channels) {
@@ -32,7 +32,8 @@ export class NoticiasService {
                 console.log(`Processing channel ${channel.url}`);
                 noticiasBatch
                     .set(channel.name, filterNews(
-                        await this.extractNewsFromRss(xmlString)
+                        await this.extractNewsFromRss(xmlString),
+                        censoredWords
                     ).slice(0, MAX_NEWS_PER_CHANNEL)); // Usar las primeras 
             }
             return Array.from(noticiasBatch.values()).flat();

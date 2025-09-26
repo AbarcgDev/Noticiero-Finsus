@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import rssChannelRoutes from './src/app/routes/rssChannelRoutes';
 import noticierosRoutes from './src/app/routes/noticierosRoutes';
 import loginRoutes from './src/app/routes/loginRoutes';
+import settingsRoutes from "./src/app/routes/settingsRoutes"
 import { authenticateJWT, errorHandler } from './src/app/middlewares/authMiddleware';
 
 // Cargar variables de entorno
@@ -59,10 +60,12 @@ if (authOn) {
     // Ejemplo protegiendo todas las rutas, se puede hacer a nivel de ruta y/o controlador
     app.use('/api/rss-channels', authenticateJWT, rssChannelRoutes);
     app.use('/api/noticieros', authenticateJWT, noticierosRoutes);
+    app.use("/api/settings", authenticateJWT, settingsRoutes)
 } else {
     // Si no está habilitada la autenticación por JWT, se deja sin protección
     app.use('/api/rss-channels', rssChannelRoutes);
     app.use('/api/noticieros', noticierosRoutes);
+    app.use("/api/settings", authenticateJWT, settingsRoutes)
 }
 
 // Manejo de errores (debe ir después de las rutas)

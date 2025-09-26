@@ -95,86 +95,80 @@
   </template>
   
   <script setup lang="ts">
-  import router from '../../router';
-import { ref, watch } from 'vue';
-  
+  import router from '../../router'
+  import { ref, watch } from 'vue'
+  import { useRoute } from 'vue-router'
+
   // --- Props y Emits ---
-  // El componente acepta un error desde el padre (ej. error de API)
   const props = defineProps({
     apiError: {
       type: String,
-      default: '',
-    },
-  });
-  
-  // El componente emite eventos cuando los formularios son enviados
-  const emit = defineEmits(['login-submitted', 'register-submitted']);
-  
-  
+      default: ''
+    }
+  })
+  const emit = defineEmits<{ (e: 'login-submitted'): void; (e: 'register-submitted', payload: { username: string; password: string }): void }>()
+
   // --- Estado Reactivo Interno ---
-  const isLoginView = ref(true);
-  const username = ref('');
-  const password = ref('');
-  const errorMessage = ref(''); // Muestra errores de validación local o de la API
-  
+  const isLoginView = ref(true)
+  const username = ref('')
+  const password = ref('')
+  const errorMessage = ref('')
+
   // --- Observador para el error de la API ---
-  // Si la prop apiError cambia, actualizamos el mensaje de error local
   watch(() => props.apiError, (newValue) => {
     if (newValue) {
-      errorMessage.value = newValue;
+      errorMessage.value = newValue
     }
-  });
-  
+  })
+
+  // --- Router ---
+  const route = useRoute()
+
   // --- Métodos ---
   const handleLogin = async () => {
-    // Validación básica antes de emitir
     if (!username.value || !password.value) {
-      errorMessage.value = 'Por favor, completa todos los campos.';
-      return;
+      errorMessage.value = 'Por favor, completa todos los campos.'
+      return
     }
-    errorMessage.value = ''; // Limpia el error antes de emitir
-    // Emite los datos al componente padre para que maneje la lógica de login
+    errorMessage.value = ''
+
     const response = await fetch('/api/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: username.value, password: password.value }),
-    });
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username.value, password: password.value })
+    })
+
     if (response.ok) {
-      const payload = await response.json();
-      localStorage.setItem('username', payload.data.username);
-      localStorage.setItem('token', payload.data.jwt);
-      emit('login-submitted');
-      router.push('/admin');
+      const payload = await response.json()
+      localStorage.setItem('username', payload.data.username)
+      localStorage.setItem('token', payload.data.jwt)
+      emit('login-submitted')
+      const redirectTo = typeof route.query.redirect === 'string' && route.query.redirect ? route.query.redirect : '/admin'
+      router.push(redirectTo)
     } else {
-      errorMessage.value = 'Error al iniciar sesión.';
+      errorMessage.value = 'Error al iniciar sesión.'
     }
-  };
-  
+  }
+
   const handleRegister = () => {
-    // Validación básica antes de emitir
     if (!username.value || !password.value) {
-      errorMessage.value = 'Por favor, completa todos los campos.';
-      return;
+      errorMessage.value = 'Por favor, completa todos los campos.'
+      return
     }
     if (password.value.length < 6) {
-      errorMessage.value = 'La contraseña debe tener al menos 6 caracteres.';
-      return;
+      errorMessage.value = 'La contraseña debe tener al menos 6 caracteres.'
+      return
     }
-    errorMessage.value = ''; // Limpia el error antes de emitir
-    // Emite los datos al componente padre para que maneje la lógica de registro
-    emit('register-submitted', { username: username.value, password: password.value });
-  };
-  
-  // Cambia entre la vista de login y registro
+    errorMessage.value = ''
+    emit('register-submitted', { username: username.value, password: password.value })
+  }
+
   const toggleView = () => {
-    isLoginView.value = !isLoginView.value;
-    // Limpia los campos y errores al cambiar de vista
-    errorMessage.value = '';
-    username.value = '';
-    password.value = '';
-  };
+    isLoginView.value = !isLoginView.value
+    errorMessage.value = ''
+    username.value = ''
+    password.value = ''
+  }
   </script>
   
   <style scoped>

@@ -10,6 +10,7 @@ export const adminRoutes: RouteRecordRaw[] = [
         name: 'noticieros',
         component: NoticierosView,
         meta: {
+            requiresAuth: true,
             title: 'Noticieros',
             icon: 'mdi-newspaper-variant-multiple',
             showInMenu: true
@@ -20,6 +21,7 @@ export const adminRoutes: RouteRecordRaw[] = [
         name: 'fuentes',
         component: FuentesView,
         meta: {
+            requiresAuth: true,
             title: 'Fuentes',
             icon: 'mdi-rss',
             showInMenu: true
@@ -76,12 +78,22 @@ const router = createRouter({
 // Maneja el redireccionamiento al login si el usuario no tiene credenciales.
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-    const isAuthenticated = localStorage.getItem('token') !== null
-    if (requiresAuth && !isAuthenticated) {
-        next({ name: 'login' })
-    } else {
-        next()
+    const tokenRaw = localStorage.getItem('token')
+    const hasToken = typeof tokenRaw === 'string' && tokenRaw.trim().length > 0
+
+    // Si la ruta requiere autenticación y no hay token válido, redirige a login
+    if (requiresAuth && !hasToken) {
+        next({ name: 'login', query: { redirect: to.fullPath } })
+        return
     }
+
+    // Si intenta ir a login y ya está autenticado, redirige al panel
+    if (to.name === 'login' && hasToken) {
+        next({ path: '/admin' })
+        return
+    }
+
+    next()
 })
 
 export default router

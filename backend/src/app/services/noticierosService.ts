@@ -35,7 +35,7 @@ export class NoticieroService {
         await this.initConfig();
         const noticias = await this.noticiasService.fetchLatestNews(this.aiConfig.censoredWords);
         const noticiero = this.noticierosRepository.create({
-            title: 'Noticiero' + new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
+            title: this.aiConfig.channelName + ' - ' + new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }),
             guion: await this.generateGuionWithAI(noticias, this.apiKey),
             state: NoticieroState.PENDING,
             publicationDate: new Date(),
@@ -85,13 +85,13 @@ export class NoticieroService {
 
     private async generateGuionWithAI(noticias: Noticia[], apiKey: string): Promise<string> {
         const bienvenida = AiPrompts.bienvenida.join("\n\n")
-            .replace("__CHANNEL_NAME__", this.aiConfig.channelName)
-            .replace("__MALE_PRESENTER__", this.aiConfig.malePresenter)
-            .replace("__FEMALE_PRESENTER__", this.aiConfig.femalePresenter);
+            .replace(/__CHANNEL_NAME__/g, this.aiConfig.channelName)
+            .replace(/__MALE_PRESENTER__/g, this.aiConfig.malePresenter)
+            .replace(/__FEMALE_PRESENTER__/g, this.aiConfig.femalePresenter);
         const despedida = AiPrompts.despedida.join("\n\n")
-            .replace("__CHANNEL_NAME__", this.aiConfig.channelName)
-            .replace("__MALE_PRESENTER__", this.aiConfig.malePresenter)
-            .replace("__FEMALE_PRESENTER__", this.aiConfig.femalePresenter);
+            .replace(/__CHANNEL_NAME__/g, this.aiConfig.channelName)
+            .replace(/__MALE_PRESENTER__/g, this.aiConfig.malePresenter)
+            .replace(/__FEMALE_PRESENTER__/g, this.aiConfig.femalePresenter);
         const guionContent = await this.callTextGenerationService(this.generatePrompt(noticias), apiKey);
         return [
             bienvenida,
@@ -102,9 +102,9 @@ export class NoticieroService {
 
     private generatePrompt(noticias: Noticia[]): string {
         const instructions = AiPrompts.guionNoticiero.instruction.join("\n")
-            .replace("__CHANNEL_NAME__", this.aiConfig.channelName)
-            .replace("__MALE_PRESENTER__", this.aiConfig.malePresenter)
-            .replace("__FEMALE_PRESENTER__", this.aiConfig.femalePresenter);
+            .replace(/__CHANNEL_NAME__/g, this.aiConfig.channelName)
+            .replace(/__MALE_PRESENTER__/g, this.aiConfig.malePresenter)
+            .replace(/__FEMALE_PRESENTER__/g, this.aiConfig.femalePresenter);
         const prompt = [
             AiPrompts.guionNoticiero.context.join("\n"),
             instructions,

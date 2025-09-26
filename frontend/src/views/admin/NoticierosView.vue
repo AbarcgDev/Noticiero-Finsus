@@ -151,7 +151,30 @@
 
     <v-card-text>
       <v-form v-if="esEdicion" v-model="formularioValido">
-        </v-form>
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                v-model="noticieroActual.title"
+                label="Título"
+                variant="outlined"
+                :rules="[v => !!v || 'El nombre es requerido']"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-textarea
+                v-model="noticieroActual.guion"
+                label="Guion"
+                variant="outlined"
+                rows="10"
+                :rules="[ (v: string) => !!v || 'La descripción es requerida']"
+                required
+              ></v-textarea>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-form>
 
       <v-form v-else v-model="formularioValido">
         <v-container>
@@ -169,7 +192,6 @@
                 required
               ></v-text-field>
             </v-col>
-
             <v-col cols="12">
               <h4 class="text-subtitle-2 mb-1">Nombres de presentadores</h4>
             </v-col>
@@ -347,6 +369,7 @@ import {
   publicarNoticiero as publicarNoticieroAPI,
   type Noticiero
 } from '../../controllers/noticierosController'
+import api from '../../services/api'
 
 // Base URL para API
 const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api'
@@ -357,6 +380,12 @@ const parametrosIA = ref({
   malePresenter: '',
   femalePresenter: '',
 })
+const estadoInicialIA = ref({
+  channelName: '',
+  malePresenter: '',
+  femalePresenter: '',
+  censoredWords: [] as { id: number; text: string }[]
+});
 const censoredWords = ref<{ id: number; text: string }[]>([])
 const newCensoredWord = ref('')
 
@@ -451,16 +480,71 @@ const cargarNoticieros = async () => {
 }
 
 // MODIFICADO: Ahora resetea los parámetros de la IA
-const abrirDialogoCrear = () => {
+const abrirDialogoCrear = async () => {
   esEdicion.value = false
-  parametrosIA.value = {
-    channelName: '',
-    malePresenter: '',
-    femalePresenter: '',
-  }
-  censoredWords.value = []
   noticieroActual.value = {}
-  dialogoNoticiero.value = true
+  try {
+    const [
+      channelName,
+      malePresenter,
+      femalePresenter,
+      wordsFromAPI,
+    ] = await Promise.all([
+      getChannelName(),
+      getMalePresenter(),
+      getFemalePresenter(),
+      getCensoredWords(),
+    ])
+
+  parametrosIA.value = {
+    channelName: channelName,
+    malePresenter: malePresenter,
+    femalePresenter: femalePresenter,
+  }
+  const mappedWords = Array.isArray(wordsFromAPI) ? wordsFromAPI.map((wordText, index) => ({
+    id: index, 
+    text: wordText
+  })) : [];
+  censoredWords.value = mappedWords;
+
+    estadoInicialIA.value = {
+      channelName,
+      malePresenter,
+      femalePresenter,
+      censoredWords: JSON.parse(JSON.stringify(mappedWords)) // Copia profunda
+    };
+
+    dialogoNoticiero.value = true;
+
+  } catch (error) {
+    console.error("Error al preparar el diálogo de creación:", error);
+    // Aquí podrías mostrar una notificación de error al usuario
+  }
+}
+
+
+const getChannelName = async (): Promise<string> => {
+  const response = await api.get("settings/channel-name");
+  const data = response.data;
+  return data.channelName ?? "";
+}
+
+const getCensoredWords = async () => {
+  const response = await api.get("settings/censored-words");
+  const data = response.data;
+  return data.censoredWords;
+}
+
+const getMalePresenter = async () => {
+  const response = await api.get("settings/male-presenter");
+  const data = response.data;
+  return data.malePresenter;
+}
+
+const getFemalePresenter = async () => {
+  const response = await api.get("settings/female-presenter");
+  const data = response.data;
+  return data.femalePresenter;
 }
 
 const editarNoticiero = (noticiero: Noticiero) => {
@@ -483,9 +567,29 @@ const guardarNoticiero = async () => {
       // Lógica de actualización (si la mantienes)
       await updateNoticiero(noticieroActual.value.id, noticieroActual.value)
     } else {
-      // Nueva lógica para generar con IA
-      console.log('Enviando para generar con IA:')
-      // La función createNoticiero ahora recibirá estos parámetros
+      const settingsPayload: any = {};
+      if (parametrosIA.value.channelName !== estadoInicialIA.value.channelName) {
+        settingsPayload.channelName = parametrosIA.value.channelName;
+      }
+      if (parametrosIA.value.malePresenter !== estadoInicialIA.value.malePresenter) {
+        settingsPayload.malePresenter = parametrosIA.value.malePresenter;
+      }
+      if (parametrosIA.value.femalePresenter !== estadoInicialIA.value.femalePresenter) {
+        settingsPayload.femalePresenter = parametrosIA.value.femalePresenter;
+      }
+      const currentWords = JSON.stringify(censoredWords.value.map(w => w.text).sort());
+      const initialWords = JSON.stringify(estadoInicialIA.value.censoredWords.map(w => w.text).sort());
+      if (currentWords !== initialWords) {
+        settingsPayload.censoredWords = censoredWords.value.map(w => w.text);
+      }
+
+      if (Object.keys(settingsPayload).length > 0) {
+        console.log('Detectados cambios en la configuración. Actualizando...');
+        await updateSettings(settingsPayload);
+      }
+
+      console.log('Enviando para generar noticiero con IA...');
+
       await createNoticiero({
         title: noticieroActual.value.title ?? '',
         guion: noticieroActual.value.guion ?? '',
@@ -501,6 +605,41 @@ const guardarNoticiero = async () => {
     guardando.value = false
   }
 }
+
+type SettingKey = 'channelName' | 'malePresenter' | 'femalePresenter' | 'censoredWords';
+
+const updateSettings = async (settings: Partial<Record<SettingKey, any>>) => {
+  const endpointMapping: Record<SettingKey, string> = {
+    channelName: 'settings/channel-name',
+    malePresenter: 'settings/male-presenter',
+    femalePresenter: 'settings/female-presenter',
+    censoredWords: 'settings/censored-words'
+  };
+
+  // 2. Crea un array de promesas, una por cada ajuste que ha cambiado
+  const updatePromises = Object.keys(settings).map(key => {
+    const settingKey = key as SettingKey;
+    const endpoint = endpointMapping[settingKey];
+    const value = settings[settingKey];
+
+    if (endpoint) {
+      // El payload debe ser un objeto. Ej: { channelName: 'Nuevo Nombre' }
+      const payload = { [settingKey]: value };
+      console.log(`Actualizando ${settingKey} en ${endpoint} con`, payload);
+      return api.put(endpoint, payload);
+    }
+    return Promise.resolve(); // Devuelve una promesa resuelta si la llave no se encuentra
+  });
+
+  // 3. Ejecuta todas las promesas de actualización en paralelo
+  try {
+    await Promise.all(updatePromises);
+    console.log('Todos los ajustes se han actualizado correctamente.');
+  } catch (error) {
+    console.error('Ocurrió un error al actualizar uno o más ajustes:', error);
+    throw error; // Propaga el error para que la función que llama se entere
+  }
+};
 
 const confirmarEliminar = (noticiero: Noticiero) => {
   noticieroActual.value = { ...noticiero }
@@ -546,9 +685,16 @@ const verDetalles = (noticiero: Noticiero) => {
 const reproducirAudio = async (id?: string) => {
   if (!id) return
   try {
-    const url = `${API_URL}/noticieros/${id}/audio`
+    const response = await api.get(`noticieros/${id}/audio`, {
+      responseType: 'blob'
+    });
+    const url = URL.createObjectURL(response.data);
     const audio = new Audio(url)
     await audio.play()
+
+    audio.onended = () => {
+      URL.revokeObjectURL(url)
+    }
   } catch (error) {
     console.error('Error reproduciendo audio del noticiero:', error)
   }

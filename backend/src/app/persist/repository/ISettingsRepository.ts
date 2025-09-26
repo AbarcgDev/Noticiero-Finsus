@@ -2,5 +2,5 @@ import IAConfiguration, { IAConfigurationFields } from "../../models/IAConfigura
 
 export interface ISettingsRepository {
     findConfiguration(): Promise<IAConfiguration | null>;
-    updateConfiguration(configuration: Omit<IAConfiguration, 'id'>): Promise<void>;
+    updateConfiguration(configuration: Partial<IAConfigurationFields>): Promise<void>;
 }

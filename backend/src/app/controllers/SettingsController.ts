@@ -25,6 +25,7 @@ export class SettingsController {
             res.status(HttpStatus.NOT_FOUND).json({
                 message: "Male presenter not found"
             })
+            return;
         }
         res.status(HttpStatus.OK).json({
             malePresenter
@@ -36,6 +37,7 @@ export class SettingsController {
             res.status(HttpStatus.NOT_FOUND).json({
                 message: "Female presenter not found"
             })
+            return;
         }
         res.status(HttpStatus.OK).json({
             femalePresenter
@@ -47,6 +49,7 @@ export class SettingsController {
             res.status(HttpStatus.NOT_FOUND).json({
                 message: "Censored words not found"
             })
+            return;
         }
         res.status(HttpStatus.OK).json({
             censoredWords

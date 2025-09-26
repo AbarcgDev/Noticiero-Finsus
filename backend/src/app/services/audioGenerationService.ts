@@ -31,6 +31,7 @@ export class AudioGenerationService {
     }
 
     async generateAudio(noticieroId: string, content: string): Promise<void> {
+        await this.initConfig();
         console.log("Generando audio para noticiero: " + noticieroId);
         try {
             // Obtener el audio WAV en base64 de la API

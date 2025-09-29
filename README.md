@@ -62,6 +62,20 @@ erDiagram
         string url
         boolean isActive
     }
+    
+    USUARIO {
+        string username PK
+        string password
+        enum role
+    }
+
+    IA_SETTINGS {
+        int id PK
+        string channel_name
+        string male_presenter
+        string female_presenter
+        json censored_words
+    }
 ```
 
 ### Descripción de las Tablas
@@ -80,6 +94,49 @@ erDiagram
 
 #### IA_SETTINGS (configuración)
 - Tabla `ia_settings` mantiene valores como `channel_name`, `male_presenter`, `female_presenter` y `censored_words` (JSON) para personalizar el noticiero.
+
+### DDL de referencia (resumen)
+
+El esquema creado por `database/createDatabse.sql` es el siguiente:
+
+```sql
+CREATE DATABASE IF NOT EXISTS noticieros;
+USE noticieros;
+
+CREATE TABLE IF NOT EXISTS `ia_settings` (
+  `id` int NOT NULL,
+  `channel_name` varchar(100) DEFAULT 'Noticiero',
+  `male_presenter` varchar(100) DEFAULT 'Javier',
+  `female_presenter` varchar(100) DEFAULT 'Lucia',
+  `censored_words` json DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `noticieros` (
+  `id` varchar(36) NOT NULL DEFAULT (uuid()),
+  `title` varchar(255) NOT NULL,
+  `guion` text NOT NULL,
+  `state` enum('PENDING','PUBLISHED','REJECTED') NOT NULL,
+  `publicationDate` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `rss_channels` (
+  `id` varchar(36) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `isActive` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url` (`url`)
+);
+
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `username` varchar(100) NOT NULL,
+  `password` text NOT NULL,
+  `role` enum('admin','user') NOT NULL DEFAULT 'user',
+  PRIMARY KEY (`username`)
+);
+```
 
 ### Gestion de IA
 

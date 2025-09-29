@@ -74,6 +74,13 @@ erDiagram
 - Almacena las fuentes de noticias RSS
 - Puede estar activo o inactivo
 
+#### USUARIOS (autenticación)
+- Tabla `usuarios` con campos: `username` (PK), `password` (hash), `role` (`admin`|`user`, por defecto `user`).
+- El primer usuario creado (o el primer login si no existen usuarios) se asigna automáticamente con rol `admin`.
+
+#### IA_SETTINGS (configuración)
+- Tabla `ia_settings` mantiene valores como `channel_name`, `male_presenter`, `female_presenter` y `censored_words` (JSON) para personalizar el noticiero.
+
 ### Gestion de IA
 
 Se puede gestionar los prompts en el archivo `AiPrompts.json` que se encuentra en la carpeta `utils`.
@@ -173,6 +180,32 @@ PATCH /api/rss-channels/:id/activate
 PATCH /api/rss-channels/:id/deactivate
 ```
 
+### Rutas Públicas
+
+Estas no requieren autenticación y están expuestas bajo `'/api/public'`:
+
+- Obtener el último noticiero publicado
+  ```
+  GET /api/public/noticieros/latest
+  ```
+
+- Obtener un noticiero por ID (público)
+  ```
+  GET /api/public/noticieros/:id
+  ```
+
+- Audio del último noticiero publicado
+  ```
+  GET /api/public/noticieros/latest/audio
+  ```
+  Respuesta: stream `audio/mpeg`
+
+- Audio de un noticiero por ID
+  ```
+  GET /api/public/noticieros/:id/audio
+  ```
+  Respuesta: stream `audio/mpeg`
+
 ## 🚀 Guía Rápida de Inicio
 
 ### Prerrequisitos
@@ -212,16 +245,53 @@ docker-compose down
 
 La aplicación estará disponible en: http://localhost:3000
 
+### Inicialización automática de la Base de Datos
+
+- El contenedor de MySQL ejecuta automáticamente los scripts montados en `/docker-entrypoint-initdb.d/` solo la primera vez, cuando el directorio de datos está vacío.
+- Este proyecto monta:
+  - `database/createDatabse.sql` como `01-schema.sql` (crea BD `noticieros` y tablas: `ia_settings`, `noticieros`, `rss_channels`, `usuarios`).
+  - `database/defaultSettings.sql` como `02-defaults.sql` (inserta valores por defecto en `ia_settings`).
+- Si la base ya existe y quieres forzar la inicialización automática, baja el stack y elimina el volumen de datos (destructivo):
+  ```bash
+  docker compose down -v
+  docker compose up -d
+  ```
+- Alternativamente, puedes importar manualmente dentro del contenedor:
+  ```bash
+  # Importar esquema
+  docker exec -i noticiero-mysql \
+    mysql --force -uroot -p$MYSQL_ROOT_PASSWORD noticieros < /docker-entrypoint-initdb.d/01-schema.sql
+
+  # Importar valores por defecto
+  docker exec -i noticiero-mysql \
+    mysql --force -uroot -p$MYSQL_ROOT_PASSWORD noticeros < /docker-entrypoint-initdb.d/02-defaults.sql
+  ```
+
 ## 🔧 Configuración
 
 ### Variables de Entorno
 
-Copia `.env.example` a `.env` y configura los siguientes valores:
+Copia `.env.example` a `.env` y configura los siguientes valores (principales):
 
-- `DB_*`: Configuración de la base de datos MySQL
-- `GEMINI_API_KEY`: Tu clave de API de Google Gemini
-- `R2_*`: Configuración de Cloudflare R2 (opcional)
-- `JWT_SECRET`: Clave secreta para JWT
+- Base de datos MySQL (`docker-compose` usa `env_file: .env`):
+  - `MYSQL_ROOT_PASSWORD`
+  - `MYSQL_DATABASE=noticieros`
+  - `MYSQL_USER`
+  - `MYSQL_PASSWORD`
+  - Variables usadas por la API:
+    - `DB_HOST=mysql`
+    - `DB_PORT=3306`
+    - `DB_NAME=noticieros`
+    - `DB_USER`, `DB_PASSWORD`
+
+- Autenticación y CORS:
+  - `JWT_SECRET` (obligatorio)
+  - `JWT_AUTH_ON` (`true` para proteger rutas con JWT, `false` para dejar sin protección)
+  - `CORS_ORIGIN` (p.ej. `http://localhost:8080` o `*`)
+
+- IA y almacenamiento (si generas audio con IA y R2):
+  - `GEMINI_API_KEY`
+  - `CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_REGION`
 
 ### Estructura de Carpetas
 
@@ -239,9 +309,15 @@ Copia `.env.example` a `.env` y configura los siguientes valores:
 
 ### Autenticación
 
-Se implementó la autenticación mediante JWT. Sin embargo la proteccion del sistema tambien se puede hacer mediante CORS si se consume a través de un frontend propio. Permitiendo la entrada solo desde ese dominio.
+Se implementó autenticación mediante JWT.
 
-Por lo tanto la protección de los endpoints específicos se puede hacer mediante JWT o CORS. Lo cual se deja a la discreción del usuario.
+- Si `JWT_AUTH_ON = true`, las rutas `/api/rss-channels`, `/api/noticieros` y `/api/settings` se protegen con JWT.
+- Si `JWT_AUTH_ON = false`, las rutas permanecen abiertas (útil en desarrollo o si proteges solo por CORS).
+- Rutas públicas siempre disponibles: `/health`, `/api/login/*`, `/api/public/*`.
+
+Además, el sistema de usuarios define un comportamiento de primer-usuario-admin:
+- Si no hay usuarios y alguien intenta registrarse, se crea con `role=admin`.
+- Si no hay usuarios y alguien intenta hacer login con credenciales válidas, se crea ese usuario automáticamente con `role=admin`.
 
 ### Endpoints Principales
 
@@ -317,6 +393,12 @@ docker-compose up -d mysql
 # Iniciar la aplicación
 npm run dev
 ```
+
+### Notas de modelos/ORM
+
+- El modelo `RssChannel` usa `modelName: 'rss_channel'` (Sequelize pluraliza a `rss_channels`), consistente con el esquema SQL.
+- La tabla `usuarios` incluye `role` con `ENUM('admin','user')`.
+- La columna `password` ya no es única (se almacenan hashes).
 
 ## 🤝 Contribución
 

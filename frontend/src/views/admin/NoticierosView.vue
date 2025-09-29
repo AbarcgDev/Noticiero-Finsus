@@ -370,6 +370,7 @@ import {
   type Noticiero
 } from '../../controllers/noticierosController'
 import api from '../../services/api'
+import axios from 'axios'
 
 // Base URL para API
 const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api'
@@ -524,27 +525,55 @@ const abrirDialogoCrear = async () => {
 
 
 const getChannelName = async (): Promise<string> => {
-  const response = await api.get("settings/channel-name");
-  const data = response.data;
-  return data.channelName ?? "";
+  try {
+    const response = await api.get("settings/channel-name");
+    const data = response.data;
+    return data.channelName ?? "";
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return "";
+    }
+    throw error;
+  }
 }
 
 const getCensoredWords = async () => {
-  const response = await api.get("settings/censored-words");
-  const data = response.data;
-  return data.censoredWords;
+  try {
+    const response = await api.get("settings/censored-words");
+    const data = response.data;
+    return data.censoredWords;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 const getMalePresenter = async () => {
-  const response = await api.get("settings/male-presenter");
-  const data = response.data;
-  return data.malePresenter;
+  try {
+    const response = await api.get("settings/male-presenter");
+    const data = response.data;
+    return data.malePresenter;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return "";
+    }
+    throw error;
+  }
 }
 
 const getFemalePresenter = async () => {
-  const response = await api.get("settings/female-presenter");
-  const data = response.data;
-  return data.femalePresenter;
+  try {
+    const response = await api.get("settings/female-presenter");
+    const data = response.data;
+    return data.femalePresenter;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return "";
+    }
+    throw error;
+  }
 }
 
 const editarNoticiero = (noticiero: Noticiero) => {

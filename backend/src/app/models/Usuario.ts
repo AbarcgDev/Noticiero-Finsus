@@ -4,12 +4,14 @@ import sequelize from "../config/database.js";
 export interface UsuarioFields {
     username: string,
     password: string,
+    role?: 'admin' | 'user',
 }
 
 class Usuario extends Model<UsuarioFields> implements UsuarioFields {
     public id!: string;
     public username!: string;
     public password!: string;
+    public role!: 'admin' | 'user';
 }
 
 Usuario.init({
@@ -21,7 +23,11 @@ Usuario.init({
     password: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+    },
+    role: {
+        type: DataTypes.ENUM('admin', 'user'),
+        allowNull: false,
+        defaultValue: 'user',
     },
 }, {
     sequelize,

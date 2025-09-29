@@ -5,6 +5,7 @@ export class UsuariosMySqlRepository implements IUsuarioRepository {
     async findAll(): Promise<Usuario[]> {
         return Usuario.findAll({ order: [['username', 'ASC']] });
     }
+
     async findByName(id: string): Promise<Usuario | null> {
         return Usuario.findByPk(id);
     }
@@ -18,6 +19,7 @@ export class UsuariosMySqlRepository implements IUsuarioRepository {
             throw error;
         }
     }
+
     async update(id: string, usuarioData: Partial<UsuarioFields>): Promise<Usuario | null> {
         try {
             const usuario = await Usuario.update(usuarioData, { where: { username: id } });
@@ -27,12 +29,22 @@ export class UsuariosMySqlRepository implements IUsuarioRepository {
             throw error;
         }
     }
+
     async delete(id: string): Promise<boolean> {
         try {
             const deletedRowsCount = await Usuario.destroy({ where: { username: id } });
             return deletedRowsCount > 0;
         } catch (error) {
             console.error("Error deleting usuario:", error);
+            throw error;
+        }
+    }
+
+    async count(): Promise<number> {
+        try {
+            return await Usuario.count();
+        } catch (error) {
+            console.error("Error counting usuarios:", error);
             throw error;
         }
     }

@@ -38,7 +38,7 @@ RssChannel.init({
     },
 }, {
     sequelize,
-    modelName: 'rss-channel',
+    modelName: 'rss_channel',
     timestamps: false,
 });
 

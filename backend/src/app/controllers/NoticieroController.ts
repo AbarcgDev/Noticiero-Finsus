@@ -198,6 +198,21 @@ export class NoticieroController {
         }
     }
 
+    async getLatestNoticiero(req: Request, res: Response): Promise<void> {
+        const latestNoticiero = await this.noticieroService.getLatestPublishedNoticiero();
+        if (!latestNoticiero) {
+            res.status(HttpStatus.NOT_FOUND).json({
+                success: false,
+                message: 'No published noticieros found'
+            });
+            return;
+        }
+        res.status(HttpStatus.OK).json({
+            success: true,
+            data: latestNoticiero
+        });
+    }
+
     /**
      * Helper method to stream audio from storage
      */

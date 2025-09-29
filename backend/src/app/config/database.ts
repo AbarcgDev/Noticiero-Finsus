@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize';
 
 // Opciones de conexión
 const db = new Sequelize(
-    process.env.DB_NAME || 'testingDB',
+    process.env.DB_NAME || 'noticieros',
     process.env.DB_USER || 'abargdev',
     process.env.DB_PASSWORD || 'abargdev',
     {

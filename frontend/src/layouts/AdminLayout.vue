@@ -10,10 +10,11 @@
         theme="dark"
       >
         <v-list-item
-          prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
+          prepend-avatar="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect width='64' height='64' fill='%234B5563'/><circle cx='32' cy='24' r='12' fill='%23ffffff'/><path d='M12 56c0-11.046 8.954-20 20-20s20 8.954 20 20' fill='%23ffffff'/></svg>"
           title="Administrador"
           nav
         >
+
           <template v-slot:append>
             <v-btn
               variant="text"

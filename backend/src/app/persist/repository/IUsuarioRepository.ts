@@ -7,4 +7,5 @@ export interface IUsuarioRepository {
     create(usuarioData: UsuarioFields): Promise<Usuario>;
     update(id: string, usuarioData: Partial<UsuarioFields>): Promise<Usuario | null>;
     delete(id: string): Promise<boolean>;
+    count(): Promise<number>;
 }

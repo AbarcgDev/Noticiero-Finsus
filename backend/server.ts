@@ -5,6 +5,7 @@ import rssChannelRoutes from './src/app/routes/rssChannelRoutes';
 import noticierosRoutes from './src/app/routes/noticierosRoutes';
 import loginRoutes from './src/app/routes/loginRoutes';
 import settingsRoutes from "./src/app/routes/settingsRoutes"
+import publicRoutes from "./src/app/routes/publicRoutes"
 import { authenticateJWT, errorHandler } from './src/app/middlewares/authMiddleware';
 
 // Cargar variables de entorno
@@ -67,6 +68,8 @@ if (authOn) {
     app.use('/api/noticieros', noticierosRoutes);
     app.use("/api/settings", authenticateJWT, settingsRoutes)
 }
+
+app.use('/api/public/', publicRoutes);
 
 // Manejo de errores (debe ir después de las rutas)
 app.use(errorHandler);

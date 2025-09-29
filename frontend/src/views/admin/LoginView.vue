@@ -33,12 +33,6 @@
                   </v-btn>
                 </form>
               </v-card-text>
-              <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-4 px-4 pb-4">
-                ¿No tienes cuenta?
-                <a href="#" @click.prevent="toggleView" class="font-medium text-indigo-600 hover:text-indigo-500">
-                  Regístrate
-                </a>.
-              </p>
             </v-card>
           </div>
   

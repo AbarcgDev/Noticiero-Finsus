@@ -4,14 +4,16 @@ import RssChannel, { RSSChannelFields } from "../models/RssChannel.js";
 import * as cheerio from "cheerio";
 import { filterNews } from "../utils/filterNews.js";
 import { RssChannelService } from "./RssChannelService.js";
+import { ConfigurationService } from "./configurationService.js";
 
 const MAX_NEWS_PER_CHANNEL = 10;
 
 export class NoticiasService {
     private rssChannelService: RssChannelService;
-
+    private settingService: ConfigurationService;
     constructor() {
         this.rssChannelService = new RssChannelService();
+        this.settingService = new ConfigurationService();
     }
 
     async fetchLatestNews(censoredWords: string[]): Promise<Noticia[]> {

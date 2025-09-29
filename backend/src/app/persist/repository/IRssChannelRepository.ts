@@ -1,4 +1,4 @@
-import RssChannel, { RSSChannelFields } from "@models/RssChannel";
+import RssChannel, { RSSChannelFields } from "../../models/RssChannel";
 
 export interface IRssChannelRepository {
     findAll(): Promise<RssChannel[]>;

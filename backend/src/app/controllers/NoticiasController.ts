@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
 import { NoticiasService } from '../services/noticiasService.js';
+import { ConfigurationService } from '@/services/configurationService.js';
 
 export class NoticiasController {
     private noticiasService: NoticiasService;
+    private configurationService: ConfigurationService;
 
     constructor() {
         this.noticiasService = new NoticiasService();
+        this.configurationService = new ConfigurationService();
     }
 
     async getNoticias(req: Request, res: Response): Promise<void> {
         try {
-            const noticias = await this.noticiasService.fetchLatestNews();
+            const censoredWords = await this.configurationService.getCensoredWords();
+            const noticias = await this.noticiasService.fetchLatestNews(censoredWords);
             res.status(200).json({
                 success: true,
                 data: noticias,
@@ -28,7 +32,8 @@ export class NoticiasController {
     async getNoticiasBySource(req: Request, res: Response): Promise<void> {
         try {
             const { source } = req.params;
-            const noticias = await this.noticiasService.fetchNewsBySource(source);
+            const censoredWords = await this.configurationService.getCensoredWords();
+            const noticias = await this.noticiasService.fetchNewsBySource(source, censoredWords);
 
             res.status(200).json({
                 success: true,

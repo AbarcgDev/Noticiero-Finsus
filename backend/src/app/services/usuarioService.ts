@@ -27,10 +27,12 @@ export class UsuarioService {
             if (existingUser) {
                 throw new Error("User already exists");
             }
+            const userCount = await this.usuarioRepository.count();
             const hashedPass = await bcrypt.hash(usuarioData.password, SALT_ROUNDS);
-            const fields = {
+            const fields: UsuarioFields = {
                 username: usuarioData.username,
                 password: hashedPass,
+                role: userCount === 0 ? 'admin' : 'user',
             }
             return this.usuarioRepository.create(fields);
         } catch (error) {
@@ -41,9 +43,20 @@ export class UsuarioService {
 
     async loginUsuario(usuarioData: UsuarioFields): Promise<UsuarioLogin | null> {
         try {
-            const usuario = await this.usuarioRepository.findByName(usuarioData.username);
+            let usuario = await this.usuarioRepository.findByName(usuarioData.username);
             if (!usuario) {
-                throw new Error("User not found");
+                const userCount = await this.usuarioRepository.count();
+                if (userCount === 0) {
+                    // Auto-create first user as admin with provided credentials
+                    const hashedPass = await bcrypt.hash(usuarioData.password, SALT_ROUNDS);
+                    usuario = await this.usuarioRepository.create({
+                        username: usuarioData.username,
+                        password: hashedPass,
+                        role: 'admin',
+                    });
+                } else {
+                    throw new Error("User not found");
+                }
             }
             const validPassword = await bcrypt.compare(usuarioData.password, usuario.password);
             if (!validPassword) {
@@ -60,7 +73,7 @@ export class UsuarioService {
     private generateJWT(usuario: Usuario): string {
         const payload = {
             username: usuario.username,
-            role: 'admin',
+            role: (usuario as any).role || 'user',
         };
         return generateToken(payload);
     }

@@ -1,75 +1,240 @@
-# 📰 Noticiero Finsus - Servicio de creacion de Noticieros mediante IA
+# Noticiero Finsus - Documentación del Proyecto
 
-Aplicación Node.js/TypeScript para la gestión y publicación de noticieros con soporte para fuentes RSS y generación de audio mediante IA.
+## 1. Resumen Ejecutivo
 
-## ✨ Características Principales
+### 1.1 Descripción General del Proyecto
+**Noticiero Finsus** es una plataforma tecnológica avanzada diseñada para la automatización integral de la producción de noticieros corporativos. El sistema actúa como un puente inteligente entre la información cruda y el contenido audiovisual final, permitiendo a las organizaciones transformar flujos de noticias en tiempo real en boletines informativos profesionales con mínima intervención humana.
 
-- 🎙️ Generación de audio de noticias con IA (Google Gemini)
-- 📡 Gestión de fuentes RSS
-- 🗄️ Almacenamiento en la nube (Cloudflare R2)
-- 🐳 Despliegue con Docker y Docker Compose
-- 🏗️ Arquitectura limpia con separación de responsabilidades
-- 🛠️ TypeScript para tipado estático
-- 🔄 API RESTful completa
+### 1.2 Propósito Principal
+El propósito fundamental es **democratizar y agilizar la producción de contenido noticioso de alta calidad**, eliminando las barreras técnicas y de costos asociadas con la producción tradicional de video, mediante el uso intensivo de Inteligencia Artificial Generativa.
 
-## 🏗️ Arquitectura del Sistema
+### 1.3 Introducción
+#### Contexto Breve
+En la era digital actual, la velocidad de la información es crítica. Los medios tradicionales y los departamentos de comunicación corporativa enfrentan el desafío de producir contenido relevante de manera casi instantánea. La Inteligencia Artificial ha madurado lo suficiente para ofrecer soluciones que no solo asisten, sino que ejecutan tareas creativas complejas.
+
+#### Planteamiento del Problema
+La producción de un noticiero tradicional implica:
+1.  Monitoreo manual de fuentes.
+2.  Redacción de guiones por editores humanos.
+3.  Grabación de voz (locución) y video (presentadores).
+4.  Edición y postproducción.
+Este proceso es **lento, costoso y difícil de escalar**.
+
+#### Alcance del Proyecto
+El sistema abarca desde la ingesta automática de fuentes RSS hasta la generación de un video final, pasando por la curación de contenido, generación de guiones, síntesis de voz y creación de avatares virtuales.
+*   **Límites**: El sistema se centra en noticias corporativas y financieras. La validación final del contenido sensible sigue requiriendo supervisión humana.
+
+### 1.4 Objetivos
+#### Objetivo General
+Desarrollar una plataforma web escalable que automatice el 90% del flujo de trabajo de producción de noticieros, reduciendo el tiempo de producción de horas a minutos mediante la integración de modelos de lenguaje (LLMs) y síntesis audiovisual.
+
+#### Objetivos Específicos
+1.  Implementar un módulo de ingesta capaz de procesar múltiples feeds RSS en tiempo real.
+2.  Integrar Google Gemini para el análisis de relevancia y la redacción automática de guiones con tono periodístico.
+3.  Desarrollar una interfaz de usuario intuitiva para la gestión y edición de los noticieros generados.
+4.  Implementar un sistema de síntesis de voz (TTS) natural para la narración de noticias.
+
+### 1.5 Justificación
+#### Relevancia del Proyecto
+La automatización de contenidos es una tendencia irreversible. Este proyecto posiciona a la organización en la vanguardia de la adopción tecnológica, optimizando recursos y garantizando consistencia en la comunicación.
+
+#### Beneficios Esperados
+*   **Reducción de Costos**: Menor necesidad de personal dedicado a tareas repetitivas.
+*   **Velocidad**: Publicación casi inmediata de noticias relevantes.
+*   **Escalabilidad**: Capacidad de generar múltiples noticieros simultáneos sin aumentar la infraestructura linealmente.
+
+#### Público Objetivo
+*   Departamentos de Comunicación Corporativa.
+*   Agencias de Noticias Digitales.
+*   Creadores de Contenido Independientes.
+
+#### Impacto Tecnológico
+El proyecto innova al orquestar múltiples servicios de IA (Generación de Texto, TTS, Avatares) en un pipeline coherente y fácil de usar, abstrayendo la complejidad técnica para el usuario final.
+
+---
+
+## 2. Marco Teórico
+
+### 2.1 Conceptos Fundamentales
+
+#### Inteligencia Artificial (IA)
+Rama de la informática que se ocupa de la creación de agentes capaces de razonar, aprender y actuar de manera autónoma. En este proyecto, se utiliza IA para simular capacidades cognitivas humanas como la redacción y el habla.
+
+#### Aprendizaje Automático (Machine Learning)
+Subcampo de la IA que permite a las máquinas aprender de los datos sin ser programadas explícitamente. Es la base de los modelos predictivos y generativos utilizados.
+
+#### Procesamiento de Lenguaje Natural (NLP)
+Campo que combina la lingüística y la informática para permitir a las máquinas entender, interpretar y generar lenguaje humano. Es crucial para el análisis de las noticias y la redacción de guiones.
+
+### 2.2 Tecnologías de IA Aplicadas
+
+#### Generación de Texto (LLMs)
+Se utilizan Grandes Modelos de Lenguaje (como Google Gemini) para comprender el contexto de las noticias RSS, resumirlas, cambiar su tono y estructurarlas en un formato de guion televisivo.
+
+#### Síntesis de Voz (Text-to-Speech)
+Tecnología que convierte texto escrito en audio hablado. Se emplean modelos neuronales para generar voces que suenen naturales, con entonación y ritmo adecuados para noticias.
+
+#### Generación de Video/Avatares
+Uso de IA para animar imágenes estáticas o generar presentadores virtuales (avatares) que sincronizan sus movimientos labiales (lip-sync) con el audio generado.
+
+---
+
+## 3. Metodología
+
+### 3.1 Tipo de Investigación
+**Investigación Tecnológica Aplicada**: Se busca resolver un problema práctico (la producción de noticieros) mediante la aplicación innovadora de conocimientos científicos y tecnológicos existentes.
+
+### 3.2 Metodología de Desarrollo
+Se utiliza una metodología **Ágil (Híbrido Scrum/Kanban)**, permitiendo iteraciones rápidas y adaptación a cambios en las tecnologías de IA, que evolucionan rápidamente.
+
+#### Fases del Proyecto
+1.  **Fase de Investigación**: Análisis de APIs de IA, selección de stack tecnológico y definición de requerimientos.
+2.  **Fase de Diseño**: Arquitectura de software, diseño de base de datos y prototipado de UI/UX.
+3.  **Fase de Implementación**: Desarrollo del backend (API, integraciones) y frontend (Dashboard).
+4.  **Fase de Pruebas**: Pruebas unitarias, de integración y validación de calidad del contenido generado.
+5.  **Fase de Evaluación**: Retroalimentación de usuarios y ajuste de parámetros de los modelos.
+
+### 3.3 Cronograma de Actividades
+
+| Semana | Actividad | Entregable |
+| :--- | :--- | :--- |
+| 1-2 | Investigación y Configuración de Entorno | Documento de Arquitectura, Repo Git |
+| 3-4 | Desarrollo Backend: Ingesta RSS y BD | API de Fuentes y Noticias |
+| 5-6 | Integración IA: Generación de Guiones | Módulo de Generación de Texto |
+| 7-8 | Desarrollo Frontend: Dashboard | Interfaz de Gestión Funcional |
+| 9-10 | Integración TTS y Generación de Video | Módulo Audiovisual Beta |
+| 11-12 | Pruebas Integrales y Despliegue | Versión 1.0 en Producción |
+
+### 3.4 Recursos Necesarios
+*   **Hardware**: Servidor de despliegue (Linux), Estaciones de trabajo para desarrollo.
+*   **Software**: Docker, Node.js, Vue.js, MySQL.
+*   **APIs**: Google Gemini API (Texto), AWS Polly/OpenAI TTS (Voz), HeyGen/D-ID (Video - opcional/futuro).
+*   **Recursos Humanos**: 1 Desarrollador Fullstack, 1 Diseñador UI/UX, 1 Ingeniero de IA (Prompt Engineer).
+
+---
+
+## 4. Arquitectura del Sistema
+
+### 4.1 Diagrama de Casos de Uso
+
+```mermaid
+usecaseDiagram
+    actor "Administrador" as Admin
+    actor "Sistema AI (Gemini/TTS)" as AI
+
+    package "Gestión de Fuentes" {
+        usecase "CRUD Canales RSS" as UC1
+        usecase "Activar/Desactivar Fuente" as UC2
+    }
+
+    package "Producción de Noticieros" {
+        usecase "Generar Borrador (Guion)" as UC3
+        usecase "Editar Guion" as UC4
+        usecase "Publicar (Generar Audio)" as UC5
+        usecase "Rechazar Noticiero" as UC6
+    }
+
+    package "Configuración" {
+        usecase "Configurar Presentadores" as UC7
+        usecase "Configurar Palabras Censuradas" as UC8
+    }
+
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC5
+    Admin --> UC6
+    Admin --> UC7
+    Admin --> UC8
+
+    UC3 ..> AI : "Solicita Guion"
+    UC5 ..> AI : "Solicita Audio"
+```
+
+### 4.2 Diagrama General del Sistema
 
 ```mermaid
 graph TD
-    A[Cliente] -->|Solicitudes HTTP| B[API REST]
-    B --> C[Controladores]
-    C --> D[Servicios]
-    D --> E[Repositorios]
-    D --> F[IA Gemini]
-    D --> G[Almacenamiento R2]
-    E --> H[Base de Datos]
+    User[Usuario / Admin] -->|Interactúa| Frontend[Frontend Vue 3]
+    Frontend -->|HTTP REST| Backend[Backend Express/Node.js]
     
-    subgraph Aplicación
-        C
-        D
-        E
+    subgraph "Servidor Backend"
+        Backend -->|Lee/Escribe| DB[(Base de Datos MySQL)]
+        Backend -->|Almacena Archivos| Storage[AWS S3 / Local]
+        
+        Ingestor[Módulo Ingesta] -->|Consulta| RSS[Fuentes RSS Externas]
+        Generator[Módulo IA] -->|Prompting| Gemini[Google Gemini API]
+        Synthesizer[Módulo TTS] -->|Texto a Audio| TTS_API[Servicio TTS]
     end
     
-    subgraph Servicios Externos
-        F
-        G
-    end
+    Backend -.-> Ingestor
+    Backend -.-> Generator
+    Backend -.-> Synthesizer
 ```
 
+### 4.2 Componentes Principales
 
-### Flujo de Datos
-1. **Cliente**: Realiza peticiones HTTP a la API
-2. **Controladores**: Gestionan las rutas y validan las solicitudes
-3. **Servicios**: Contienen la lógica de negocio
-4. **Repositorios**: Manejan el acceso a la base de datos
-5. **Servicios Externos**: Integración con IA y almacenamiento en la nube
+#### Módulo de Entrada de Datos
+Responsable de conectarse a las fuentes RSS configuradas, descargar los feeds XML, parsearlos y normalizar la información (título, descripción, fecha, enlace) para su almacenamiento.
 
-## 🗃️ Esquema de la Base de Datos
+#### Módulo de Procesamiento con IA
+El núcleo inteligente. Selecciona las noticias más relevantes, elimina duplicados y utiliza Google Gemini para reescribir el contenido. Aplica reglas de estilo y tono definidas en la configuración.
+
+#### Módulo de Generación de Guion
+Organiza las noticias procesadas en una estructura secuencial: Intro -> Noticia 1 -> Noticia 2 -> ... -> Cierre. Genera el texto exacto que leerá el presentador.
+
+#### Módulo de Síntesis de Voz
+Toma el guion textual y lo envía a un servicio de TTS para obtener un archivo de audio (MP3/WAV) con la voz seleccionada.
+
+#### Módulo de Generación Visual
+(En desarrollo) Sincroniza el audio con un avatar virtual o genera una secuencia de imágenes/video de fondo relacionadas con las noticias.
+
+#### Módulo de Ensamblaje Final
+Combina audio, video y elementos gráficos (títulos, logos) para renderizar el archivo de video final (MP4) listo para descarga o streaming.
+
+### 4.3 Flujo de Trabajo
+1.  **Configuración**: El admin añade URLs de RSS.
+2.  **Ingesta**: El sistema busca nuevas noticias periódicamente.
+3.  **Generación**: El usuario solicita "Generar Noticiero".
+4.  **Procesamiento**: La IA selecciona y redacta el guion.
+5.  **Revisión**: El usuario edita el guion en el Dashboard.
+6.  **Síntesis**: Se genera el audio y video final.
+7.  **Publicación**: El noticiero se marca como listo.
+
+### 4.4 Base de Datos
+Utiliza un modelo relacional (MySQL) para mantener la integridad de:
+*   `Usuarios`: Credenciales y roles.
+*   `Fuentes RSS`: URLs y estado.
+*   `Noticias`: Artículos individuales capturados.
+*   `Noticieros`: Agrupación de noticias con su guion y estado.
+
+### 4.5 Modelo de Datos (ERD)
 
 ```mermaid
 erDiagram
-    NOTICIERO {
-        string id PK
-        string title
-        text guion
-        enum state
-        datetime publicationDate
+    Usuario {
+        string username PK
+        string password
+        enum role "admin, user"
     }
-    
-    RSS_CHANNEL {
-        string id PK
+
+    RssChannel {
+        uuid id PK
         string name
         string url
         boolean isActive
     }
-    
-    USUARIO {
-        string username PK
-        string password
-        enum role
+
+    Noticiero {
+        uuid id PK
+        string title
+        text guion
+        enum state "PENDING, PUBLISHED, REJECTED"
+        datetime publicationDate
     }
 
-    IA_SETTINGS {
+    IAConfiguration {
         int id PK
         string channel_name
         string male_presenter
@@ -78,398 +243,88 @@ erDiagram
     }
 ```
 
-### Descripción de las Tablas
-
-#### NOTICIERO
-- Almacena los noticieros generados
-- Estados posibles: PENDING, PUBLISHED, REJECTED
-
-#### RSS_CHANNEL
-- Almacena las fuentes de noticias RSS
-- Puede estar activo o inactivo
-
-#### USUARIOS (autenticación)
-- Tabla `usuarios` con campos: `username` (PK), `password` (hash), `role` (`admin`|`user`, por defecto `user`).
-- El primer usuario creado (o el primer login si no existen usuarios) se asigna automáticamente con rol `admin`.
-
-#### IA_SETTINGS (configuración)
-- Tabla `ia_settings` mantiene valores como `channel_name`, `male_presenter`, `female_presenter` y `censored_words` (JSON) para personalizar el noticiero.
-
-### DDL de referencia (resumen)
-
-El esquema creado por `database/createDatabse.sql` es el siguiente:
-
-```sql
-CREATE DATABASE IF NOT EXISTS noticieros;
-USE noticieros;
-
-CREATE TABLE IF NOT EXISTS `ia_settings` (
-  `id` int NOT NULL,
-  `channel_name` varchar(100) DEFAULT 'Noticiero',
-  `male_presenter` varchar(100) DEFAULT 'Javier',
-  `female_presenter` varchar(100) DEFAULT 'Lucia',
-  `censored_words` json DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
-CREATE TABLE IF NOT EXISTS `noticieros` (
-  `id` varchar(36) NOT NULL DEFAULT (uuid()),
-  `title` varchar(255) NOT NULL,
-  `guion` text NOT NULL,
-  `state` enum('PENDING','PUBLISHED','REJECTED') NOT NULL,
-  `publicationDate` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-);
-
-CREATE TABLE IF NOT EXISTS `rss_channels` (
-  `id` varchar(36) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `url` varchar(255) NOT NULL,
-  `isActive` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `url` (`url`)
-);
-
-CREATE TABLE IF NOT EXISTS `usuarios` (
-  `username` varchar(100) NOT NULL,
-  `password` text NOT NULL,
-  `role` enum('admin','user') NOT NULL DEFAULT 'user',
-  PRIMARY KEY (`username`)
-);
-```
-
-### Gestion de IA
-
-Se puede gestionar los prompts en el archivo `AiPrompts.json` que se encuentra en la carpeta `utils`.
-Aqui se definen las instrucciones pasadas a los servicios de IA para generar el guion del noticiero. Y el Audio.
-
-## 📚 Documentación de la API
-
-### Noticieros
-
-#### Obtener todos los noticieros
-```
-GET /api/noticieros
-```
-
-#### Obtener un noticiero por ID
-```
-GET /api/noticieros/:id
-```
-
-#### Crear borrador de noticiero
-```
-POST /api/noticieros
-```
-
-#### Actualizar noticiero
-```
-PUT /api/noticieros/:id
-```
-
-#### Eliminar noticiero
-```
-DELETE /api/noticieros/:id
-```
-
-#### Publicar noticiero
-```
-PATCH /api/noticieros/:id/publish
-```
-
-#### Rechazar noticiero
-```
-PATCH /api/noticieros/:id/reject
-```
-
-### Endpoints de Audio
-
-#### Obtener audio del último noticiero publicado
-```
-GET /api/noticieros/latest/audio
-```
-- **Respuesta**: Stream de audio MP3 del último noticiero publicado
-- **Content-Type**: audio/mpeg
-
-#### Obtener audio de un noticiero específico
-```
-GET /api/noticieros/:id/audio
-```
-- **Parámetros**:
-  - `id`: ID del noticiero
-- **Respuesta**: Stream de audio MP3 del noticiero solicitado
-- **Content-Type**: audio/mpeg
-
-### Canales RSS
-
-#### Obtener todos los canales
-```
-GET /api/rss-channels
-```
-
-#### Obtener canal por ID
-```
-GET /api/rss-channels/:id
-```
-
-#### Crear nuevo canal
-```
-POST /api/rss-channels
-```
-
-#### Actualizar canal
-```
-PUT /api/rss-channels/:id
-```
-
-#### Eliminar canal
-```
-DELETE /api/rss-channels/:id
-```
-
-#### Activar canal
-```
-PATCH /api/rss-channels/:id/activate
-```
-
-#### Desactivar canal
-```
-PATCH /api/rss-channels/:id/deactivate
-```
-
-### Rutas Públicas
-
-Estas no requieren autenticación y están expuestas bajo `'/api/public'`:
-
-- Obtener el último noticiero publicado
-  ```
-  GET /api/public/noticieros/latest
-  ```
-
-- Obtener un noticiero por ID (público)
-  ```
-  GET /api/public/noticieros/:id
-  ```
-
-- Audio del último noticiero publicado
-  ```
-  GET /api/public/noticieros/latest/audio
-  ```
-  Respuesta: stream `audio/mpeg`
-
-- Audio de un noticiero por ID
-  ```
-  GET /api/public/noticieros/:id/audio
-  ```
-  Respuesta: stream `audio/mpeg`
-
-## 🚀 Guía Rápida de Inicio
-
-### Prerrequisitos
-
-- Docker y Docker Compose instalados
-- Cuenta en [Google AI Studio](https://ai.google.dev/) para la API de Gemini
-- Cuenta en Cloudflare R2 para almacenamiento de archivos
-  + Se utiliza la API de R2 Compatible con AWS S3, por lo que se puede reemplazar por cualquier otro servicio que lo sea.
-
-### Configuración Inicial
-
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/tu-usuario/noticiero-finsus.git
-   cd noticiero-finsus
-   ```
-
-2. Copia el archivo de ejemplo de variables de entorno:
-   ```bash
-   cp .env.example .env
-   ```
-
-3. Configura las variables de entorno en `.env` (ver sección de configuración)
-
-### 🐳 Despliegue con Docker Compose (Recomendado)
-
-```bash
-# Construir y ejecutar toda la infraestructura
-docker-compose up --build -d
-
-# Ver logs en tiempo real
-docker-compose logs -f
-
-# Detener todos los servicios
-docker-compose down
-```
-
-La aplicación estará disponible en: http://localhost:3000
-
-### Inicialización automática de la Base de Datos
-
-- El contenedor de MySQL ejecuta automáticamente los scripts montados en `/docker-entrypoint-initdb.d/` solo la primera vez, cuando el directorio de datos está vacío.
-- Este proyecto monta:
-  - `database/createDatabse.sql` como `01-schema.sql` (crea BD `noticieros` y tablas: `ia_settings`, `noticieros`, `rss_channels`, `usuarios`).
-  - `database/defaultSettings.sql` como `02-defaults.sql` (inserta valores por defecto en `ia_settings`).
-- Si la base ya existe y quieres forzar la inicialización automática, baja el stack y elimina el volumen de datos (destructivo):
-  ```bash
-  docker compose down -v
-  docker compose up -d
-  ```
-- Alternativamente, puedes importar manualmente dentro del contenedor:
-  ```bash
-  # Importar esquema
-  docker exec -i noticiero-mysql \
-    mysql --force -uroot -p$MYSQL_ROOT_PASSWORD noticieros < /docker-entrypoint-initdb.d/01-schema.sql
-
-  # Importar valores por defecto
-  docker exec -i noticiero-mysql \
-    mysql --force -uroot -p$MYSQL_ROOT_PASSWORD noticeros < /docker-entrypoint-initdb.d/02-defaults.sql
-  ```
-
-## 🔧 Configuración
-
-### Variables de Entorno
-
-Copia `.env.example` a `.env` y configura los siguientes valores (principales):
-
-- Base de datos MySQL (`docker-compose` usa `env_file: .env`):
-  - `MYSQL_ROOT_PASSWORD`
-  - `MYSQL_DATABASE=noticieros`
-  - `MYSQL_USER`
-  - `MYSQL_PASSWORD`
-  - Variables usadas por la API:
-    - `DB_HOST=mysql`
-    - `DB_PORT=3306`
-    - `DB_NAME=noticieros`
-    - `DB_USER`, `DB_PASSWORD`
-
-- Autenticación y CORS:
-  - `JWT_SECRET` (obligatorio)
-  - `JWT_AUTH_ON` (`true` para proteger rutas con JWT, `false` para dejar sin protección)
-  - `CORS_ORIGIN` (p.ej. `http://localhost:8080` o `*`)
-
-- IA y almacenamiento (si generas audio con IA y R2):
-  - `GEMINI_API_KEY`
-  - `CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_REGION`
-
-### Estructura de Carpetas
-
-```
-├── src/app/              # Código fuente de la aplicación
-│   ├── config/           # Configuraciones
-│   ├── controllers/      # Controladores de la API
-│   ├── middlewares/      # Middlewares de Express
-│   ├── models/           # Modelos de la base de datos
-│   └── services/         # Lógica de negocio
-└── docker-compose.yml    # Configuración de Docker Compose
-```
-
-## 📚 Documentación de la API
-
-### Autenticación
-
-Se implementó autenticación mediante JWT.
-
-- Si `JWT_AUTH_ON = true`, las rutas `/api/rss-channels`, `/api/noticieros` y `/api/settings` se protegen con JWT.
-- Si `JWT_AUTH_ON = false`, las rutas permanecen abiertas (útil en desarrollo o si proteges solo por CORS).
-- Rutas públicas siempre disponibles: `/health`, `/api/login/*`, `/api/public/*`.
-
-Además, el sistema de usuarios define un comportamiento de primer-usuario-admin:
-- Si no hay usuarios y alguien intenta registrarse, se crea con `role=admin`.
-- Si no hay usuarios y alguien intenta hacer login con credenciales válidas, se crea ese usuario automáticamente con `role=admin`.
-
-### Endpoints Principales
-
-#### 1. Noticieros
-
-**Obtener todos los noticieros**
-```http
-GET /api/noticieros
-```
-
-**Ejemplo de respuesta exitosa (200 OK):**
-```json
-{
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "title": "Últimas noticias financieras",
-      "state": "published",
-      "publicationDate": "2025-09-09T12:00:00.000Z"
-    }
-  ],
-}
-```
-
-**Crear un nuevo noticiero**
-```http
-POST /api/noticieros
-Authorization: Bearer <token>
-
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "title": "Noticiero Finsus - 2025-09-09",
-  "guion": "<Guion generado con IA>",
-  "state": "pending",
-  "publicationDate": "2025-09-09T12:00:00.000Z"
-}
-```
-
-#### 2. Generación de Audio
-
-Se envia un comando para publicar el noticiero, con la intencion de que el guion sea previamente aprobado por el usuario. Una vez recibido el comando se genera el audio, se almacena en el bucket configurado y se actualiza el estado del noticiero a "published". Este audio se puede consultar en el endpoint `/api/noticieros/latest/audio` si es el ultimo noticiero publicado o en el endpoint `/api/noticieros/:id/audio` para un audio en especifico.
-
-!IMPORTANTE: El servidor responde inmediatamente pero el audio  se genera en segundo plao y tardará unos minutos en estar disponible.
-
-**Generar audio para un noticiero**
-```http
-PATCH /api/noticieros/:id/publish
-Authorization: Bearer <token>
-```
-
-**Ejemplo de respuesta exitosa (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Audio generado exitosamente"
-}
-```
-
-## 🛠️ Desarrollo
-
-### Instalación de dependencias
-
-```bash
-npm install
-```
-
-### Ejecutar en modo desarrollo
-
-```bash
-# Iniciar base de datos
-docker-compose up -d mysql
-
-# Iniciar la aplicación
-npm run dev
-```
-
-### Notas de modelos/ORM
-
-- El modelo `RssChannel` usa `modelName: 'rss_channel'` (Sequelize pluraliza a `rss_channels`), consistente con el esquema SQL.
-- La tabla `usuarios` incluye `role` con `ENUM('admin','user')`.
-- La columna `password` ya no es única (se almacenan hashes).
-
-## 🤝 Contribución
-
-1. Haz un fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Haz commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Haz push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Distribuido bajo la licencia APACHE-2.0. Ver `LICENSE` para más información.
-
-## ✉️ Contacto
-
-Enlace del proyecto: [https://github.com/tuusuario/noticiero-finsus](https://github.com/tuusuario/noticiero-finsus)
-
+---
+
+## 5. Tecnologías Utilizadas
+
+### 5.1 Lenguajes de Programación
+*   **TypeScript**: Utilizado tanto en Backend como en Frontend para garantizar tipado estático y reducir errores en tiempo de ejecución.
+*   **SQL**: Para consultas y definición de estructura de datos.
+
+### 5.2 Frameworks y Librerías
+*   **Frontend**:
+    *   **Vue 3**: Framework progresivo para interfaces de usuario.
+    *   **Vite**: Herramienta de construcción rápida.
+    *   **Vuetify**: Biblioteca de componentes UI material design.
+    *   **Axios**: Cliente HTTP.
+*   **Backend**:
+    *   **Node.js**: Entorno de ejecución.
+    *   **Express**: Framework web minimalista.
+    *   **Sequelize**: ORM para manejo de base de datos.
+    *   **Cheerio/Fast-XML-Parser**: Para scraping y parsing de RSS.
+
+### 5.3 APIs de Inteligencia Artificial
+*   **Google Gemini (GenAI)**: Motor principal para comprensión y generación de texto.
+*   **AWS SDK**: Para integración con servicios de almacenamiento (S3) y potencialmente servicios cognitivos.
+
+### 5.4 Herramientas de Desarrollo
+*   **Docker & Docker Compose**: Para orquestación de contenedores y entornos reproducibles.
+*   **Git**: Control de versiones.
+*   **VS Code**: IDE recomendado.
+
+---
+
+## 6. Desarrollo e Implementación
+
+### 6.1 Configuración del Entorno de Desarrollo
+El proyecto está completamente contenerizado.
+1.  Instalación de Docker Desktop.
+2.  Clonado del repositorio.
+3.  Creación del archivo `.env` basado en `.env.example`.
+4.  Ejecución de `docker-compose up -d`.
+
+### 6.2 Implementación por Módulos
+
+#### Desarrollo del Módulo de Entrada
+Se implementó un servicio `RssService` que utiliza `axios` para obtener el XML y `fast-xml-parser` para convertirlo a objetos JSON manipulables. Se incluye lógica para filtrar noticias antiguas.
+
+#### Integración de IA para Generación de Texto
+Se creó un `GeminiService` que interactúa con la API de Google. Se diseñaron "Prompts" específicos (Ingeniería de Prompts) para instruir al modelo sobre cómo actuar como un editor de noticias profesional, respetando restricciones de longitud y tono.
+
+#### Implementación de Síntesis de Voz
+(Fase actual) Se integra mediante librerías que conectan con servicios TTS, guardando los archivos de audio resultantes en el sistema de archivos o S3, vinculándolos al registro del noticiero en la BD.
+
+#### Ensamblaje del Noticiero
+El backend orquesta las llamadas: primero obtiene datos, luego genera texto, espera aprobación (si aplica) y finalmente dispara la generación de media.
+
+### 6.3 Problemas Encontrados y Soluciones
+*   **Alucinaciones de la IA**: El modelo a veces inventaba noticias. **Solución**: Se ajustó la temperatura del modelo a valores bajos (0.2) y se reforzó el prompt para que se adhiera estrictamente a los datos de entrada.
+*   **Formatos RSS inconsistentes**: Diferentes medios usan estructuras XML distintas. **Solución**: Se implementó un normalizador robusto que maneja múltiples variantes de tags (content:encoded, description, etc.).
+
+---
+
+## 7. Interfaz de Usuario
+
+### 7.1 Diseño de la Interfaz
+La interfaz sigue los principios de **Material Design** para asegurar familiaridad y usabilidad.
+*   **Dashboard Principal**: Vista de tarjetas con los últimos noticieros generados y su estado.
+*   **Gestor de Fuentes**: Tabla CRUD para añadir y activar/desactivar feeds RSS.
+*   **Editor de Noticiero**: Vista dividida con el guion editable a la izquierda y previsualización/controles a la derecha.
+
+### 7.2 Manual Básico de Usuario
+
+#### Cómo Iniciar
+1.  Acceda a `http://localhost:8080` en su navegador.
+2.  Inicie sesión con sus credenciales de administrador.
+
+#### Cómo Generar un Noticiero
+1.  Navegue a la sección "Generar".
+2.  Seleccione las fuentes RSS que desea incluir (o deje en "Todas").
+3.  Haga clic en "Crear Guion".
+4.  Espere a que la IA procese la información.
+
+#### Cómo Ver el Resultado
+1.  Una vez generado, el noticiero aparecerá en la lista con estado "Borrador".
+2.  Entre al detalle, revise el texto y haga correcciones si es necesario.
+3.  Haga clic en "Aprobar y Generar Audio".
+4.  El sistema procesará el archivo final y habilitará el botón de "Reproducir" o "Descargar".
